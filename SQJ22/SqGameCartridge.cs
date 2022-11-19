@@ -4,7 +4,6 @@ using ExplogineCore.Data;
 using ExplogineMonoGame;
 using ExplogineMonoGame.Cartridges;
 using ExplogineMonoGame.HitTesting;
-using ExplogineMonoGame.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -84,15 +83,10 @@ public class SqGameCartridge : BasicGameCartridge
         }
 
         var hitTestStack = new HitTestStack();
-        
-        _hoverer.Update(_space, _gridRenderer.Settings, hitTestStack);
-        
-        hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
 
-        if (_hoverer.HasHoveredEntity() && Client.Input.Mouse.GetButton(MouseButton.Left).WasPressed)
-        {
-            Client.Debug.Log(_hoverer.GetHoveredEntity().Position);
-        }
+        _hoverer.UpdateHitTest(_space, _gridRenderer.Settings, hitTestStack);
+        hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
+        _hoverer.UpdateInteraction(_space, _gridRenderer.Settings);
     }
 
     public override void Draw(Painter painter)
@@ -100,6 +94,21 @@ public class SqGameCartridge : BasicGameCartridge
         painter.BeginSpriteBatch(SamplerState.LinearWrap);
         _gridRenderer.DrawEntities(painter, _space, Depth.Middle);
         _gridRenderer.DrawSpace(painter, _space, Depth.Middle + 100);
+
+        var mousePosCell = _gridRenderer.Settings.GetGridPositionFromWorldPosition(
+            Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
+
+        if (_hoverer.HasGrabbed)
+        {
+            foreach (var cell in _hoverer.Grabbed.Body.Cells())
+            {
+                _gridRenderer.HighlightCell(painter, _space, cell + mousePosCell /*+ grabOffset*/, Depth.Middle - 200);
+            }
+        }
+        else
+        {
+            _gridRenderer.HighlightCell(painter, _space, mousePosCell, Depth.Middle - 200);
+        }
 
         painter.EndSpriteBatch();
     }

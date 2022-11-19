@@ -9,5 +9,10 @@ public readonly record struct RenderSettings(Vector2 Position, int CellSize)
         return cellPosition.ToVector2() * CellSize + Position;
     }
 
-    public Point CellSizeAsPoint => new Point(CellSize);
+    public Point CellSizeAsPoint => new(CellSize);
+
+    public Point GetGridPositionFromWorldPosition(Vector2 worldPosition)
+    {
+        return ((worldPosition - Position) / CellSize).ToPoint();
+    }
 }

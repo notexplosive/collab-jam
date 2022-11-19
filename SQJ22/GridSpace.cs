@@ -7,13 +7,14 @@ namespace SQJ22;
 public class GridSpace
 {
     private readonly List<Entity> _entities = new();
-    public Point Size { get; }
 
     public GridSpace(int width, int height)
     {
         Size = new Point(width, height);
     }
-    
+
+    public Point Size { get; }
+
     public EntityData GetEntityAt(Point targetPosition)
     {
         foreach (var record in _entities)
@@ -48,7 +49,7 @@ public class GridSpace
         throw new Exception("Cannot add entity");
     }
 
-    private void AddEntity(Entity entity)
+    public void AddEntity(Entity entity)
     {
         _entities.Add(entity);
     }
@@ -85,7 +86,7 @@ public class GridSpace
                 return false;
             }
 
-            if (cell.X < 0 || cell.Y < 0 || cell.X >= Size.X || cell.Y >= Size.Y)
+            if (!ContainsCell(cell))
             {
                 return false;
             }
@@ -115,7 +116,7 @@ public class GridSpace
         }
     }
 
-    private void RemoveEntity(Entity entity)
+    public void RemoveEntity(Entity entity)
     {
         _entities.Remove(entity);
     }
@@ -131,5 +132,10 @@ public class GridSpace
         }
 
         throw new Exception("No entity found from data");
+    }
+
+    public bool ContainsCell(Point cellPosition)
+    {
+        return cellPosition.X >= 0 && cellPosition.Y >= 0 && cellPosition.X < Size.X && cellPosition.Y < Size.Y;
     }
 }

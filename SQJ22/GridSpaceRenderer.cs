@@ -20,14 +20,28 @@ public class GridSpaceRenderer
 
     public void DrawSpace(Painter painter, GridSpace space, Depth depth)
     {
-        for (int x = 0; x < space.Size.X; x++)
+        for (var x = 0; x < space.Size.X; x++)
         {
-            for (int y = 0; y < space.Size.Y; y++)
+            for (var y = 0; y < space.Size.Y; y++)
             {
                 // debug, just draw rectangles
-                var color = (x % 2 == 1 && y % 2 == 0) || (x % 2 == 0 && y % 2 == 1) ? Color.White.WithMultipliedOpacity(0.25f) : Color.White.WithMultipliedOpacity(0.10f);
-                painter.DrawRectangle(new Rectangle(Settings.CellPositionToRenderedPosition(new Point(x,y)).ToPoint(),Settings.CellSizeAsPoint), new DrawSettings{Depth = depth, Color = color});
+                var color = (x % 2 == 1 && y % 2 == 0) || (x % 2 == 0 && y % 2 == 1)
+                    ? Color.Teal.WithMultipliedOpacity(0.25f)
+                    : Color.Teal.WithMultipliedOpacity(0.10f);
+                painter.DrawRectangle(
+                    new Rectangle(Settings.CellPositionToRenderedPosition(new Point(x, y)).ToPoint(),
+                        Settings.CellSizeAsPoint), new DrawSettings {Depth = depth, Color = color});
             }
+        }
+    }
+
+    public void HighlightCell(Painter painter, GridSpace space, Point cellPosition, Depth depth)
+    {
+        if (space.ContainsCell(cellPosition))
+        {
+            painter.DrawRectangle(
+                new Rectangle(Settings.CellPositionToRenderedPosition(cellPosition).ToPoint(), Settings.CellSizeAsPoint),
+                new DrawSettings {Depth = depth, Color = Color.Yellow.WithMultipliedOpacity(0.5f)});
         }
     }
 }
