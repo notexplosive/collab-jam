@@ -1,4 +1,5 @@
-﻿using ExplogineMonoGame;
+﻿using ExplogineCore.Data;
+using ExplogineMonoGame;
 using ExplogineMonoGame.Data;
 using Microsoft.Xna.Framework;
 
@@ -14,7 +15,7 @@ public class DebugRenderer : IRenderer
         _color = new Color(colorInt | 0xff000000);
     }
     
-    public void Draw(Painter painter, RenderSettings renderSettings, Entity entity)
+    public void Draw(Painter painter, RenderSettings renderSettings, Entity entity, Depth depth)
     {
         var rectSize = new Point(renderSettings.CellSize);
         
@@ -25,7 +26,7 @@ public class DebugRenderer : IRenderer
                 new Rectangle(
                     rectPos,
                     rectSize),
-                new DrawSettings {Color = _color});
+                new DrawSettings {Color = _color, Depth = depth});
         }
     }
 }

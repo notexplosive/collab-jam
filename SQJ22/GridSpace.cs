@@ -7,7 +7,13 @@ namespace SQJ22;
 public class GridSpace
 {
     private readonly List<Entity> _entities = new();
+    public Point Size { get; }
 
+    public GridSpace(int width, int height)
+    {
+        Size = new Point(width, height);
+    }
+    
     public EntityData GetEntityAt(Point targetPosition)
     {
         foreach (var record in _entities)

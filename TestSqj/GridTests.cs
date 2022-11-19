@@ -11,7 +11,7 @@ public class GridTests
     [Fact]
     public void can_place_entity_on_grid()
     {
-        var grid = new GridSpace();
+        var grid = new GridSpace(10, 10);
         var entity = new EntityData(
             new Grid()
                 .AddCell(0, 0)
@@ -28,7 +28,7 @@ public class GridTests
     [Fact]
     public void can_place_two_entities()
     {
-        var grid = new GridSpace();
+        var grid = new GridSpace(10, 10);
         var firstEntity = new EntityData(
             new Grid()
                 .AddCell(0, 0)
@@ -54,7 +54,7 @@ public class GridTests
     [Fact]
     public void cannot_add_overlapping_entities()
     {
-        var grid = new GridSpace();
+        var grid = new GridSpace(10, 10);
         var firstEntity = new EntityData(
             new Grid()
                 .AddCell(0, 0)
@@ -86,7 +86,7 @@ public class GridTests
     [Fact]
     public void cannot_add_same_entity_twice()
     {
-        var grid = new GridSpace();
+        var grid = new GridSpace(10, 10);
         var entity = new EntityData(
             new Grid()
                 .AddCell(0, 0)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ExplogineCore;
+using ExplogineCore.Data;
 using ExplogineMonoGame;
 using ExplogineMonoGame.Cartridges;
 using ExplogineMonoGame.HitTesting;
@@ -30,7 +31,7 @@ public class SqGameCartridge : BasicGameCartridge
     public override void OnCartridgeStarted()
     {
         _gridRenderer = new GridSpaceRenderer();
-        _space = new GridSpace();
+        _space = new GridSpace(10, 10);
         _hoverer = new GridHoverer();
 
         _space.AddEntityFromData(
@@ -97,7 +98,8 @@ public class SqGameCartridge : BasicGameCartridge
     public override void Draw(Painter painter)
     {
         painter.BeginSpriteBatch(SamplerState.LinearWrap);
-        _gridRenderer.Draw(painter, _space);
+        _gridRenderer.DrawEntities(painter, _space, Depth.Middle);
+        _gridRenderer.DrawSpace(painter, _space, Depth.Middle + 100);
 
         painter.EndSpriteBatch();
     }
