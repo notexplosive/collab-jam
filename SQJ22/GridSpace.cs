@@ -84,6 +84,11 @@ public class GridSpace
             {
                 return false;
             }
+
+            if (cell.X < 0 || cell.Y < 0 || cell.X >= Size.X || cell.Y >= Size.Y)
+            {
+                return false;
+            }
         }
 
         return true;
