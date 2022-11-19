@@ -29,10 +29,7 @@ public class GridHoverer
                         settings.CellPositionToRenderedPosition(cellPosition.Global).ToPoint(),
                         settings.CellSizeAsPoint),
                     Depth.Middle,
-                    () =>
-                    {
-                        _hoverState = new HoverState(entity, cellPosition.Local);
-                    });
+                    () => { _hoverState = new HoverState(entity, cellPosition.Local); });
             }
         }
     }
@@ -81,6 +78,17 @@ public class GridHoverer
                 }
 
                 _grabState = GrabState.Empty;
+            }
+        }
+    }
+
+    public void PollForTap()
+    {
+        if (_hoverState.IsNotEmpty)
+        {
+            if (Client.Input.Mouse.GetButton(MouseButton.Left).WasPressed)
+            {
+                _hoverState.Entity.Tap();
             }
         }
     }

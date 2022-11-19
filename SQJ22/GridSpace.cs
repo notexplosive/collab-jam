@@ -15,7 +15,19 @@ public class GridSpace
 
     public Point Size { get; }
 
-    public EntityData GetEntityAt(Point targetPosition)
+    public EntityData GetEntityDataAt(Point targetPosition)
+    {
+        var entity = GetEntityAt(targetPosition);
+
+        if (entity.HasValue)
+        {
+            return entity.Value.Data;
+        }
+
+        return null;
+    }
+
+    public Entity? GetEntityAt(Point targetPosition)
     {
         foreach (var record in _entities)
         {
@@ -23,7 +35,7 @@ public class GridSpace
             {
                 if (cell.Global == targetPosition)
                 {
-                    return record.Data;
+                    return record;
                 }
             }
         }
@@ -33,13 +45,13 @@ public class GridSpace
 
     public bool CanAddEntity(EntityData entityData, Point position)
     {
-        var newRecord = new Entity(entityData, position);
+        var newRecord = new Entity(this, entityData, position);
         return CanAddEntity(newRecord);
     }
 
     public EntityData AddEntityFromData(EntityData entityData, Point position)
     {
-        var newRecord = new Entity(entityData, position);
+        var newRecord = new Entity(this, entityData, position);
         if (CanAddEntity(newRecord))
         {
             AddEntity(newRecord);
@@ -56,7 +68,7 @@ public class GridSpace
 
     public bool HasEntityAt(Point cell)
     {
-        return GetEntityAt(cell) != null;
+        return GetEntityDataAt(cell) != null;
     }
 
     private bool HasEntityData(EntityData targetEntityData)
@@ -104,7 +116,7 @@ public class GridSpace
     {
         var oldEntity = GetEntityFromData(targetData);
 
-        var newEntity = new Entity(targetData, oldEntity.Position + offset);
+        var newEntity = new Entity(this, targetData, oldEntity.Position + offset);
         RemoveEntity(oldEntity);
         if (CanAddEntity(newEntity))
         {

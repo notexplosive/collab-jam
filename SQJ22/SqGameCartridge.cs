@@ -6,12 +6,12 @@ using ExplogineMonoGame.Cartridges;
 using ExplogineMonoGame.HitTesting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace SQJ22;
 
 public class SqGameCartridge : BasicGameCartridge
 {
+    private readonly bool _isInShop = false;
     private EntityData _e1;
     private GridSpaceRenderer _gridRenderer;
     private GridHoverer _hoverer;
@@ -42,6 +42,14 @@ public class SqGameCartridge : BasicGameCartridge
                     .AddCell(1, 1)
                     .AddCell(1, 2)
                 ,
+                new TokenBehavior()
+                    .OnNudged(new LogConsoleAction("nameless got Nudged!"))
+                    .OnBlocked(new LogConsoleAction("nameless got Blocked!"))
+                    .OnTapped(
+                        new MoveTokenAction(),
+                        new LogConsoleAction("nameless got tapped")
+                    )
+                ,
                 new DebugRenderer()),
             new Point(2, 2)
         );
@@ -55,6 +63,14 @@ public class SqGameCartridge : BasicGameCartridge
                     .AddCell(0, 1)
                     .AddCell(0, -1)
                 ,
+                new TokenBehavior()
+                    .OnNudged(new LogConsoleAction("e1 got Nudged!"))
+                    .OnBlocked(new LogConsoleAction("e1 got Blocked!"))
+                    .OnTapped(
+                        new MoveTokenAction(),
+                        new LogConsoleAction("nameless got tapped")
+                    )
+                ,
                 new DebugRenderer()),
             new Point(5, 2)
         );
@@ -62,31 +78,19 @@ public class SqGameCartridge : BasicGameCartridge
 
     public override void Update(float dt)
     {
-        if (Client.Input.Keyboard.GetButton(Keys.Right).WasPressed)
-        {
-            _space.AttemptMoveEntity(_e1, new Point(1, 0));
-        }
-
-        if (Client.Input.Keyboard.GetButton(Keys.Left).WasPressed)
-        {
-            _space.AttemptMoveEntity(_e1, new Point(-1, 0));
-        }
-
-        if (Client.Input.Keyboard.GetButton(Keys.Up).WasPressed)
-        {
-            _space.AttemptMoveEntity(_e1, new Point(0, -1));
-        }
-
-        if (Client.Input.Keyboard.GetButton(Keys.Down).WasPressed)
-        {
-            _space.AttemptMoveEntity(_e1, new Point(0, 1));
-        }
-
         var hitTestStack = new HitTestStack();
 
         _hoverer.UpdateHitTest(_space, _gridRenderer.Settings, hitTestStack);
         hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
-        _hoverer.UpdateDrag(_space, _gridRenderer.Settings);
+
+        if (_isInShop)
+        {
+            _hoverer.UpdateDrag(_space, _gridRenderer.Settings);
+        }
+        else
+        {
+            _hoverer.PollForTap();
+        }
     }
 
     public override void Draw(Painter painter)
@@ -102,7 +106,8 @@ public class SqGameCartridge : BasicGameCartridge
         {
             foreach (var cell in _hoverer.Grabbed.Data.Body.Cells())
             {
-                _gridRenderer.HighlightCell(painter, _space, cell + mousePosCell - _hoverer.Grabbed.Offset, Depth.Middle - 200);
+                _gridRenderer.HighlightCell(painter, _space, cell + mousePosCell - _hoverer.Grabbed.Offset,
+                    Depth.Middle - 200);
             }
         }
         else

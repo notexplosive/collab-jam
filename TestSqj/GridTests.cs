@@ -16,13 +16,14 @@ public class GridTests
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 1),
+            new TokenBehavior(),
             new EmptyRenderer()
         );
 
         grid.AddEntityFromData(entity, new Point(3, 4));
-        grid.GetEntityAt(new Point(0, 0)).Should().BeNull();
-        grid.GetEntityAt(new Point(3, 4)).Should().Be(entity);
-        grid.GetEntityAt(new Point(4, 5)).Should().Be(entity);
+        grid.GetEntityDataAt(new Point(0, 0)).Should().BeNull();
+        grid.GetEntityDataAt(new Point(3, 4)).Should().Be(entity);
+        grid.GetEntityDataAt(new Point(4, 5)).Should().Be(entity);
     }
 
     [Fact]
@@ -35,6 +36,7 @@ public class GridTests
                 .AddCell(1, 0)
                 .AddCell(0, 1)
                 .AddCell(1, 1),
+            new TokenBehavior(),
             new EmptyRenderer()
         );
 
@@ -44,6 +46,7 @@ public class GridTests
                 .AddCell(1, 0)
                 .AddCell(0, 1)
                 .AddCell(1, 1),
+            new TokenBehavior(),
             new EmptyRenderer()
         );
 
@@ -61,6 +64,7 @@ public class GridTests
                 .AddCell(1, 0)
                 .AddCell(0, 1)
                 .AddCell(1, 1),
+            new TokenBehavior(),
             new EmptyRenderer()
         );
 
@@ -70,6 +74,7 @@ public class GridTests
                 .AddCell(1, 0)
                 .AddCell(0, 1)
                 .AddCell(1, 1),
+            new TokenBehavior(),
             new EmptyRenderer()
         );
 
@@ -93,6 +98,7 @@ public class GridTests
                 .AddCell(1, 0)
                 .AddCell(0, 1)
                 .AddCell(1, 1),
+            new TokenBehavior(),
             new EmptyRenderer()
         );
 
