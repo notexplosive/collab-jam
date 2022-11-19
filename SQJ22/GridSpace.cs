@@ -21,7 +21,7 @@ public class GridSpace
         {
             foreach (var cell in record.CellPositions())
             {
-                if (cell == targetPosition)
+                if (cell.Global == targetPosition)
                 {
                     return record.Data;
                 }
@@ -81,12 +81,12 @@ public class GridSpace
 
         foreach (var cell in entity.CellPositions())
         {
-            if (HasEntityAt(cell))
+            if (HasEntityAt(cell.Global))
             {
                 return false;
             }
 
-            if (!ContainsCell(cell))
+            if (!ContainsCell(cell.Global))
             {
                 return false;
             }

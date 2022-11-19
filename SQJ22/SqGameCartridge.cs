@@ -86,7 +86,7 @@ public class SqGameCartridge : BasicGameCartridge
 
         _hoverer.UpdateHitTest(_space, _gridRenderer.Settings, hitTestStack);
         hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
-        _hoverer.UpdateInteraction(_space, _gridRenderer.Settings);
+        _hoverer.UpdateDrag(_space, _gridRenderer.Settings);
     }
 
     public override void Draw(Painter painter)
@@ -100,9 +100,9 @@ public class SqGameCartridge : BasicGameCartridge
 
         if (_hoverer.HasGrabbed)
         {
-            foreach (var cell in _hoverer.Grabbed.Body.Cells())
+            foreach (var cell in _hoverer.Grabbed.Data.Body.Cells())
             {
-                _gridRenderer.HighlightCell(painter, _space, cell + mousePosCell /*+ grabOffset*/, Depth.Middle - 200);
+                _gridRenderer.HighlightCell(painter, _space, cell + mousePosCell - _hoverer.Grabbed.Offset, Depth.Middle - 200);
             }
         }
         else

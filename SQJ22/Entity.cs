@@ -5,11 +5,13 @@ namespace SQJ22;
 
 public readonly record struct Entity(EntityData Data, Point Position)
 {
-    public IEnumerable<Point> CellPositions()
+    public IEnumerable<CellPosition> CellPositions()
     {
-        foreach (var localCell in Data.Body.Cells())
+        foreach (var localPosition in Data.Body.Cells())
         {
-            yield return localCell + Position;
+            yield return new CellPosition(localPosition, localPosition + Position);
         }
     }
+
+    public record struct CellPosition(Point Local, Point Global);
 }

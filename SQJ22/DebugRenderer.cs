@@ -21,7 +21,7 @@ public class DebugRenderer : IRenderer
         
         foreach (var cellPosition in entity.CellPositions())
         {
-            var rectPos = renderSettings.CellPositionToRenderedPosition(cellPosition).ToPoint();
+            var rectPos = renderSettings.CellPositionToRenderedPosition(cellPosition.Global).ToPoint();
             painter.DrawRectangle(
                 new Rectangle(
                     rectPos,
