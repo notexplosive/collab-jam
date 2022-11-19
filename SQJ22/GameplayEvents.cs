@@ -46,8 +46,8 @@ public static class GameplayEvents
     public static ITween AnimateNudged(RenderHandle nudgedEntityHandle, Point offset)
     {
         return new SequenceTween()
-                .Add(new Tween<Vector2>(nudgedEntityHandle.Offset, offset.ToVector2() / 4, 0.15f, Ease.Linear))
-                .Add(new Tween<Vector2>(nudgedEntityHandle.Offset, Vector2.Zero, 0.15f, Ease.Linear))
+                .Add(new Tween<Vector2>(nudgedEntityHandle.Offset, offset.ToVector2() / 4, 0.05f, Ease.QuadFastSlow))
+                .Add(new Tween<Vector2>(nudgedEntityHandle.Offset, Vector2.Zero, 0.05f, Ease.QuadSlowFast))
             ;
     }
 
@@ -55,15 +55,15 @@ public static class GameplayEvents
     {
         return new SequenceTween()
                 .Add(new CallbackTween(() => movedEntityRenderHandle.Offset.Value = -offset.ToVector2()))
-                .Add(new Tween<Vector2>(movedEntityRenderHandle.Offset, Vector2.Zero, 0.15f, Ease.Linear))
+                .Add(new Tween<Vector2>(movedEntityRenderHandle.Offset, Vector2.Zero, 0.10f, Ease.QuadFastSlow))
             ;
     }
 
     public static ITween AnimateBlock(RenderHandle blockedEntityRenderHandle, Point offset)
     {
         return new SequenceTween()
-                .Add(new Tween<Vector2>(blockedEntityRenderHandle.Offset, offset.ToVector2() / 4, 0.15f, Ease.Linear))
-                .Add(new Tween<Vector2>(blockedEntityRenderHandle.Offset, Vector2.Zero, 0.15f, Ease.Linear))
+                .Add(new Tween<Vector2>(blockedEntityRenderHandle.Offset, offset.ToVector2() / 4, 0.05f, Ease.QuadFastSlow))
+                .Add(new Tween<Vector2>(blockedEntityRenderHandle.Offset, Vector2.Zero, 0.10f, Ease.QuadSlowFast))
             ;
     }
 

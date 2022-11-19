@@ -46,11 +46,8 @@ public class SqGameCartridge : BasicGameCartridge
                     .AddCell(1, 2)
                 ,
                 new TokenBehavior()
-                    .OnNudged(new LogConsoleAction("nameless got Nudged!"))
-                    .OnBlocked(new LogConsoleAction("nameless got Blocked!"))
                     .OnTapped(
-                        new MoveTokenAction(),
-                        new LogConsoleAction("nameless got tapped")
+                        new MoveTokenAction()
                     )
                 ,
                 new DebugRenderer()),
@@ -67,14 +64,8 @@ public class SqGameCartridge : BasicGameCartridge
                     .AddCell(0, -1)
                 ,
                 new TokenBehavior()
-                    .OnNudged(new LogConsoleAction("e1 got Nudged!"))
-                    .OnBlocked(new LogConsoleAction("e1 got Blocked!"))
-                    .OnMoved(new LogConsoleAction("e1 got Moved!"))
-                    .OnDestroyed(new LogConsoleAction("e1 got Destroyed!"))
-                    .OnAdjacentTapped(new LogConsoleAction("e1's neighbor was tapped!"))
                     .OnTapped(
-                        new MoveTokenAction(),
-                        new LogConsoleAction("nameless got tapped")
+                        new MoveTokenAction()
                     )
                 ,
                 new DebugRenderer()),

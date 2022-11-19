@@ -78,7 +78,7 @@ public class Animation
             {
                 if (_sequence.ChildrenWithDurationCount > 0)
                 {
-                    Client.Debug.Log("~~ Animation complete ~~");
+                    // Client.Debug.Log("~~ Animation complete ~~");
                 }
 
                 _sequence.Clear();

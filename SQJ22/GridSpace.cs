@@ -112,7 +112,7 @@ public class GridSpace
         return _entities;
     }
 
-    public void AttemptMoveEntity(EntityData targetData, Point offset)
+    public void AttemptWarpEntity(EntityData targetData, Point offset)
     {
         var oldEntity = GetEntityFromData(targetData);
 
