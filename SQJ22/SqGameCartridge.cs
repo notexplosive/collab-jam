@@ -16,6 +16,7 @@ public class SqGameCartridge : BasicGameCartridge
     private GridSpaceRenderer _gridRenderer;
     private GridHoverer _hoverer;
     private GridSpace _space;
+    
     public override CartridgeConfig CartridgeConfig { get; } = new(new Point(1920, 1080));
 
     public override void AddCommandLineParameters(CommandLineParametersWriter parameters)
@@ -29,6 +30,8 @@ public class SqGameCartridge : BasicGameCartridge
 
     public override void OnCartridgeStarted()
     {
+        ServiceLocator.Register(new Animation(false));
+
         _gridRenderer = new GridSpaceRenderer();
         _space = new GridSpace(10, 10);
         _hoverer = new GridHoverer();
@@ -66,6 +69,9 @@ public class SqGameCartridge : BasicGameCartridge
                 new TokenBehavior()
                     .OnNudged(new LogConsoleAction("e1 got Nudged!"))
                     .OnBlocked(new LogConsoleAction("e1 got Blocked!"))
+                    .OnMoved(new LogConsoleAction("e1 got Moved!"))
+                    .OnDestroyed(new LogConsoleAction("e1 got Destroyed!"))
+                    .OnAdjacentTapped(new LogConsoleAction("e1's neighbor was tapped!"))
                     .OnTapped(
                         new MoveTokenAction(),
                         new LogConsoleAction("nameless got tapped")
@@ -78,8 +84,15 @@ public class SqGameCartridge : BasicGameCartridge
 
     public override void Update(float dt)
     {
-        var hitTestStack = new HitTestStack();
+        var animation = ServiceLocator.Locate<Animation>();
+        animation.Update(dt);
 
+        if (animation.IsPlaying())
+        {
+            return;
+        }
+        
+        var hitTestStack = new HitTestStack();
         _hoverer.UpdateHitTest(_space, _gridRenderer.Settings, hitTestStack);
         hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
 

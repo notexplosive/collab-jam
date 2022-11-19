@@ -1,4 +1,5 @@
 ﻿using ExplogineMonoGame;
+using ExTween;
 
 namespace SQJ22;
 
@@ -11,8 +12,8 @@ public class LogConsoleAction : ITokenAction
         _message = message;
     }
 
-    public void Execute(Entity entity)
+    public ITween Execute(Entity entity)
     {
-        Client.Debug.Log(_message);
+        return new CallbackTween(() => Client.Debug.Log(_message));
     }
 }

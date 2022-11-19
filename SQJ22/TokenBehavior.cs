@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ExTween;
 
 namespace SQJ22;
 
@@ -55,18 +56,20 @@ public class TokenBehavior
     {
         private readonly List<ITokenAction> _actions = new();
 
-        public void Execute(Entity entity)
+        public ITween Execute(Entity entity)
         {
+            var result = new SequenceTween();
             foreach (var action in _actions)
             {
-                action.Execute(entity);
+                result.Add(action.Execute(entity));
             }
+
+            return result;
         }
 
-        public TokenBehaviorEvent Add(ITokenAction action)
+        public void Add(ITokenAction action)
         {
             _actions.Add(action);
-            return this;
         }
     }
 }

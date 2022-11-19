@@ -5,7 +5,7 @@ namespace SQJ22;
 
 public class EmptyRenderer : IRenderer
 {
-    public void Draw(Painter painter, RenderSettings renderSettings, Entity entity, Depth depth)
+    public void DrawEntity(Painter painter, RenderSettings renderSettings, Entity entity, Depth depth)
     {
     }
 }
