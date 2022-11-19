@@ -2,7 +2,9 @@
 using ExplogineCore;
 using ExplogineCore.Data;
 using ExplogineMonoGame;
+using ExplogineMonoGame.AssetManagement;
 using ExplogineMonoGame.Cartridges;
+using ExplogineMonoGame.Data;
 using ExplogineMonoGame.HitTesting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +18,8 @@ public class SqGameCartridge : BasicGameCartridge
     private GridSpaceRenderer _gridRenderer;
     private GridHoverer _hoverer;
     private GridSpace _space;
-    
+    private float _elapsedTime;
+
     public override CartridgeConfig CartridgeConfig { get; } = new(new Point(1920, 1080));
 
     public override void AddCommandLineParameters(CommandLineParametersWriter parameters)
@@ -25,7 +28,21 @@ public class SqGameCartridge : BasicGameCartridge
 
     public override IEnumerable<ILoadEvent> LoadEvents(Painter painter)
     {
-        yield return null;
+        foreach (var direction in Direction.Each())
+        {
+            yield return new AssetLoadEvent($"{direction.Name}Arrows", () =>
+            {
+                var arrowTexture = Client.Assets.GetTexture("arrows");
+                var canvas = new Canvas(arrowTexture.Width, arrowTexture.Height);
+                Client.Graphics.PushCanvas(canvas);
+                painter.BeginSpriteBatch(SamplerState.LinearWrap);
+                painter.DrawAtPosition(arrowTexture, new Vector2(arrowTexture.Width, arrowTexture.Height) / 2, Scale2D.One,
+                    new DrawSettings {Angle = direction.ToAngle(), Origin = DrawOrigin.Center});
+                painter.EndSpriteBatch();
+                Client.Graphics.PopCanvas();
+                return canvas.AsTextureAsset();
+            });
+        }
     }
 
     public override void OnCartridgeStarted()
@@ -81,6 +98,7 @@ public class SqGameCartridge : BasicGameCartridge
 
     public override void Update(float dt)
     {
+        _elapsedTime += dt;
         var animation = ServiceLocator.Locate<Animation>();
         animation.Update(dt);
 
@@ -88,7 +106,7 @@ public class SqGameCartridge : BasicGameCartridge
         {
             return;
         }
-        
+
         var hitTestStack = new HitTestStack();
         _hoverer.UpdateHitTest(_space, _gridRenderer.Settings, hitTestStack);
         hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
@@ -123,8 +141,40 @@ public class SqGameCartridge : BasicGameCartridge
         else
         {
             _gridRenderer.HighlightCell(painter, _space, mousePosCell, Depth.Middle - 200);
+
+            // Draw arrows
+            if (_hoverer.HasHoveredEntity())
+            {
+                var entity = _hoverer.GetHoveredEntity();
+                if (entity.Direction != Direction.None)
+                {
+                    var arrows = GetArrowTexture(entity.Direction);
+                    foreach (var cellPosition in entity.CellPositions())
+                    {
+                        var destinationRect = new Rectangle(
+                            _gridRenderer.Settings.CellPositionToRenderedPosition(cellPosition.Global).ToPoint(),
+                            _gridRenderer.Settings.CellSizeAsPoint);
+
+                        var sourceRect = destinationRect;
+                        sourceRect.Location -= (_elapsedTime * entity.Direction.ToVector2() * 60f).ToPoint();
+
+                        painter.DrawAsRectangle(arrows, destinationRect,
+                            new DrawSettings
+                            {
+                                SourceRectangle = sourceRect,
+                                Color = Color.White.WithMultipliedOpacity(0.5f),
+                                Depth = Depth.Middle - 250,
+                            });
+                    }
+                }
+            }
         }
 
         painter.EndSpriteBatch();
+    }
+
+    private Texture2D GetArrowTexture(Direction direction)
+    {
+        return Client.Assets.GetAsset<TextureAsset>(direction.Name + "Arrows").Texture;
     }
 }

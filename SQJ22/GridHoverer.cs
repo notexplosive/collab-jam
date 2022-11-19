@@ -96,8 +96,8 @@ public class GridHoverer
     public readonly record struct HoverState(Entity? MaybeEntity, Point HoveredCell)
     {
         public static HoverState Empty = new(null, Point.Zero);
-        public bool IsNotEmpty => this != HoverState.Empty;
-        public bool IsEmpty => this == HoverState.Empty;
+        public bool IsNotEmpty => !IsEmpty;
+        public bool IsEmpty => this == HoverState.Empty || ServiceLocator.Locate<Animation>().IsPlaying();
         public Entity Entity => MaybeEntity ?? throw new Exception("HoverState was empty");
     }
 

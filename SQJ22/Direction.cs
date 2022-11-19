@@ -1,21 +1,36 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace SQJ22;
 
 public record Direction
 {
-    public static readonly Direction Down = new(new Point(0, 1));
-    public static readonly Direction Up = new(new Point(0, -1));
-    public static readonly Direction Left = new(new Point(-1, 0));
-    public static readonly Direction Right = new(new Point(1, 0));
-    public static readonly Direction None = new(new Point(0, 0));
+    public static readonly Direction Down = new(new Point(0, 1), "Down");
+    public static readonly Direction Up = new(new Point(0, -1), "Up");
+    public static readonly Direction Left = new(new Point(-1, 0), "Left");
+    public static readonly Direction Right = new(new Point(1, 0), "Right");
+    public static readonly Direction None = new(new Point(0, 0), "None");
 
-    private Direction(Point asPoint)
+    private Direction(Point asPoint, string name)
     {
         AsPoint = asPoint;
+        Name = name;
     }
 
+    public string Name { get; }
+
     public Point AsPoint { get; }
+
+    public Point ToPoint()
+    {
+        return AsPoint;
+    }
+
+    public Vector2 ToVector2()
+    {
+        return AsPoint.ToVector2();
+    }
 
     public Direction NextCounterClockwise()
     {
@@ -75,5 +90,42 @@ public record Direction
             Rotation.CounterClockwise => NextCounterClockwise(),
             _ => Direction.None
         };
+    }
+
+    public float ToAngle()
+    {
+        if (this == Direction.Up)
+        {
+            return -MathF.PI / 2;
+        }
+
+        if (this == Direction.Right)
+        {
+            return 0;
+        }
+
+        if (this == Direction.Down)
+        {
+            return MathF.PI / 2;
+        }
+
+        if (this == Direction.Left)
+        {
+            return MathF.PI;
+        }
+
+        return 0;
+    }
+
+    public static IEnumerable<Direction> Each(bool includeNone = true)
+    {
+        yield return Direction.Right;
+        yield return Direction.Up;
+        yield return Direction.Left;
+        yield return Direction.Down;
+        if (includeNone)
+        {
+            yield return Direction.None;
+        }
     }
 }

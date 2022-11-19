@@ -18,4 +18,9 @@ public class Grid
     {
         return _cells;
     }
+
+    public bool Contains(Point localCellPosition)
+    {
+        return _cells.Contains(localCellPosition);
+    }
 }
