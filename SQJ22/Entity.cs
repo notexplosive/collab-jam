@@ -15,58 +15,6 @@ public readonly record struct Entity(GridSpace Space, EntityData Data, Point Pos
         }
     }
 
-    public void AttemptMove(Point offset)
-    {
-        var newEntity = this with {Position = Position + offset};
-        Space.RemoveEntityMatchingData(Data);
-        var canMove = true;
-
-        var nudgeSequence = new SequenceTween();
-        var moveSequence = new SequenceTween();
-        var blockSequence = new SequenceTween();
-
-        foreach (var newCellPosition in newEntity.CellPositions())
-        {
-            if (Space.HasEntityAt(newCellPosition.Global))
-            {
-                canMove = false;
-                var nudgedMaybeEntity = Space.GetEntityAt(newCellPosition.Global);
-                if (!nudgedMaybeEntity.HasValue)
-                {
-                    throw new Exception("API violation, Space said we had an entity here, but we didn't");
-                }
-
-                var nudgedEntity = nudgedMaybeEntity.Value;
-                var nudgedEntityData = nudgedEntity.Data;
-                nudgeSequence.Add(nudgedEntityData.Behavior.Nudged.Execute(Space, nudgedEntityData));
-                nudgeSequence.Add(GameplayEvents.AnimateNudged(nudgedEntityData.RenderHandle, offset));
-            }
-
-            if (!Space.ContainsCell(newCellPosition.Global))
-            {
-                canMove = false;
-            }
-        }
-
-        if (canMove)
-        {
-            Space.AddEntity(newEntity);
-            moveSequence.Add(Data.Behavior.Moved.Execute(Space, Data));
-            moveSequence.Add(GameplayEvents.AnimateMove(newEntity.Data.RenderHandle, offset));
-        }
-        else
-        {
-            Space.AddEntity(this);
-            blockSequence.Add(Data.Behavior.Blocked.Execute(Space, Data));
-            blockSequence.Add(GameplayEvents.AnimateBlock(Data.RenderHandle, offset));
-        }
-
-        var animation = ServiceLocator.Locate<Animation>();
-        animation.Enqueue(moveSequence);
-        animation.Enqueue(blockSequence);
-        animation.Enqueue(nudgeSequence);
-    }
-
     public void Tap()
     {
         var animation = ServiceLocator.Locate<Animation>();
