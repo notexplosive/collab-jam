@@ -2,6 +2,8 @@
 using ExplogineCore;
 using ExplogineMonoGame;
 using ExplogineMonoGame.Cartridges;
+using ExplogineMonoGame.HitTesting;
+using ExplogineMonoGame.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,9 +12,10 @@ namespace SQJ22;
 
 public class SqGameCartridge : BasicGameCartridge
 {
-    private GridSpaceRenderer _gridRenderer;
-    private GridSpace _space;
     private EntityData _e1;
+    private GridSpaceRenderer _gridRenderer;
+    private GridHoverer _hoverer;
+    private GridSpace _space;
     public override CartridgeConfig CartridgeConfig { get; } = new(new Point(1920, 1080));
 
     public override void AddCommandLineParameters(CommandLineParametersWriter parameters)
@@ -28,6 +31,7 @@ public class SqGameCartridge : BasicGameCartridge
     {
         _gridRenderer = new GridSpaceRenderer();
         _space = new GridSpace();
+        _hoverer = new GridHoverer();
 
         _space.AddEntityFromData(
             new EntityData(
@@ -60,22 +64,33 @@ public class SqGameCartridge : BasicGameCartridge
     {
         if (Client.Input.Keyboard.GetButton(Keys.Right).WasPressed)
         {
-            _space.AttemptMoveEntity(_e1, new Point(1,0));
+            _space.AttemptMoveEntity(_e1, new Point(1, 0));
         }
-        
+
         if (Client.Input.Keyboard.GetButton(Keys.Left).WasPressed)
         {
-            _space.AttemptMoveEntity(_e1, new Point(-1,0));
+            _space.AttemptMoveEntity(_e1, new Point(-1, 0));
         }
-        
+
         if (Client.Input.Keyboard.GetButton(Keys.Up).WasPressed)
         {
-            _space.AttemptMoveEntity(_e1, new Point(0,-1));
+            _space.AttemptMoveEntity(_e1, new Point(0, -1));
         }
-        
+
         if (Client.Input.Keyboard.GetButton(Keys.Down).WasPressed)
         {
-            _space.AttemptMoveEntity(_e1, new Point(0,1));
+            _space.AttemptMoveEntity(_e1, new Point(0, 1));
+        }
+
+        var hitTestStack = new HitTestStack();
+        
+        _hoverer.Update(_space, _gridRenderer.Settings, hitTestStack);
+        
+        hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
+
+        if (_hoverer.HasHoveredEntity() && Client.Input.Mouse.GetButton(MouseButton.Left).WasPressed)
+        {
+            Client.Debug.Log(_hoverer.GetHoveredEntity().Position);
         }
     }
 

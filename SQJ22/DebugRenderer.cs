@@ -20,10 +20,10 @@ public class DebugRenderer : IRenderer
         
         foreach (var cellPosition in entity.CellPositions())
         {
-            var rectPos = cellPosition.ToVector2() * renderSettings.CellSize + renderSettings.Position;
+            var rectPos = renderSettings.CellPositionToRenderedPosition(cellPosition).ToPoint();
             painter.DrawRectangle(
                 new Rectangle(
-                    rectPos.ToPoint(),
+                    rectPos,
                     rectSize),
                 new DrawSettings {Color = _color});
         }

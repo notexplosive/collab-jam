@@ -2,4 +2,12 @@
 
 namespace SQJ22;
 
-public readonly record struct RenderSettings(Vector2 Position, int CellSize);
+public readonly record struct RenderSettings(Vector2 Position, int CellSize)
+{
+    public Vector2 CellPositionToRenderedPosition(Point cellPosition)
+    {
+        return cellPosition.ToVector2() * CellSize + Position;
+    }
+
+    public Point CellSizeAsPoint => new Point(CellSize);
+}
