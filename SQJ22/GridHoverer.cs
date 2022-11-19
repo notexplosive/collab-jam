@@ -9,19 +9,17 @@ namespace SQJ22;
 
 public class GridHoverer
 {
-    private GrabState _grabbedEntity = GrabState.Empty;
-    private Entity? _hoveredEntity;
-    private Point? _hoveredLocalCell;
+    private GrabState _grabState = GrabState.Empty;
+    private HoverState _hoverState;
 
-    public bool HasGrabbed => _grabbedEntity.IsNotEmpty;
+    public bool HasGrabbed => _grabState.IsNotEmpty;
 
     public GrabState Grabbed =>
-        _grabbedEntity.IsNotEmpty ? _grabbedEntity : throw new Exception("Nothing grabbed");
+        _grabState.IsNotEmpty ? _grabState : throw new Exception("Nothing grabbed");
 
     public void UpdateHitTest(GridSpace space, RenderSettings settings, HitTestStack hitTestStack)
     {
-        _hoveredEntity = null;
-        _hoveredLocalCell = null;
+        _hoverState = HoverState.Empty;
         foreach (var entity in space.Entities())
         {
             foreach (var cellPosition in entity.CellPositions())
@@ -33,8 +31,7 @@ public class GridHoverer
                     Depth.Middle,
                     () =>
                     {
-                        _hoveredEntity = entity;
-                        _hoveredLocalCell = cellPosition.Local;
+                        _hoverState = new HoverState(entity, cellPosition.Local);
                     });
             }
         }
@@ -42,17 +39,17 @@ public class GridHoverer
 
     public bool HasHoveredEntity()
     {
-        return _hoveredEntity != null;
+        return _hoverState.IsNotEmpty;
     }
 
     public Entity GetHoveredEntity()
     {
-        if (_hoveredEntity == null)
+        if (_hoverState.IsEmpty)
         {
             throw new Exception("No hovered entity");
         }
 
-        return _hoveredEntity.Value;
+        return _hoverState.Entity;
     }
 
     public void UpdateDrag(GridSpace space, RenderSettings renderSettings)
@@ -63,17 +60,17 @@ public class GridHoverer
             {
                 var grabbed = GetHoveredEntity();
                 space.RemoveEntity(grabbed);
-                _grabbedEntity = new GrabState(grabbed, _hoveredLocalCell.Value);
+                _grabState = new GrabState(grabbed, _hoverState.HoveredCell);
             }
         }
 
         if (Client.Input.Mouse.GetButton(MouseButton.Left).WasReleased)
         {
-            if (_grabbedEntity.IsNotEmpty)
+            if (_grabState.IsNotEmpty)
             {
-                var dropped = _grabbedEntity.Entity;
+                var dropped = _grabState.Entity;
                 var droppedPosition = renderSettings.GetGridPositionFromWorldPosition(
-                    Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas)) - _grabbedEntity.Offset;
+                    Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas)) - _grabState.Offset;
                 if (space.CanAddEntity(dropped.Data, droppedPosition))
                 {
                     space.AddEntityFromData(dropped.Data, droppedPosition);
@@ -83,9 +80,17 @@ public class GridHoverer
                     space.AddEntity(dropped);
                 }
 
-                _grabbedEntity = GrabState.Empty;
+                _grabState = GrabState.Empty;
             }
         }
+    }
+
+    public readonly record struct HoverState(Entity? MaybeEntity, Point HoveredCell)
+    {
+        public static HoverState Empty = new(null, Point.Zero);
+        public bool IsNotEmpty => this != HoverState.Empty;
+        public bool IsEmpty => this == HoverState.Empty;
+        public Entity Entity => MaybeEntity.HasValue ? MaybeEntity.Value : throw new Exception("HoverState was empty");
     }
 
     public readonly record struct GrabState(Entity? MaybeEntity, Point Offset)
