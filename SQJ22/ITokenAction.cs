@@ -4,5 +4,5 @@ namespace SQJ22;
 
 public interface ITokenAction
 {
-    public ITween Execute(Entity entity);
+    public ITween Execute(GridSpace space, EntityData data);
 }

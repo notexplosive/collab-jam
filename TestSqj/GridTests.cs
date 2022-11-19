@@ -20,7 +20,7 @@ public class GridTests
             new EmptyRenderer()
         );
 
-        grid.AddEntityFromData(entity, new Point(3, 4));
+        grid.AddEntityFromData(entity, new Point(3, 4), Direction.None);
         grid.GetEntityDataAt(new Point(0, 0)).Should().BeNull();
         grid.GetEntityDataAt(new Point(3, 4)).Should().Be(entity);
         grid.GetEntityDataAt(new Point(4, 5)).Should().Be(entity);
@@ -50,8 +50,8 @@ public class GridTests
             new EmptyRenderer()
         );
 
-        grid.AddEntityFromData(firstEntity, new Point(0, 0));
-        grid.AddEntityFromData(secondEntity, new Point(2, 0));
+        grid.AddEntityFromData(firstEntity, new Point(0, 0), Direction.None);
+        grid.AddEntityFromData(secondEntity, new Point(2, 0), Direction.None);
     }
 
     [Fact]
@@ -80,11 +80,11 @@ public class GridTests
 
         var func = () =>
         {
-            grid.AddEntityFromData(firstEntity, new Point(0, 0));
-            grid.AddEntityFromData(secondEntity, new Point(1, 1));
+            grid.AddEntityFromData(firstEntity, new Point(0, 0), Direction.None);
+            grid.AddEntityFromData(secondEntity, new Point(1, 1), Direction.None);
         };
         func.Should().Throw<Exception>();
-        
+
         grid.CanAddEntity(secondEntity, new Point(1, 1)).Should().BeFalse();
     }
 
@@ -104,8 +104,8 @@ public class GridTests
 
         var func = () =>
         {
-            grid.AddEntityFromData(entity, new Point(0, 0));
-            grid.AddEntityFromData(entity, new Point(5, 5));
+            grid.AddEntityFromData(entity, new Point(0, 0), Direction.None);
+            grid.AddEntityFromData(entity, new Point(5, 5), Direction.None);
         };
         func.Should().Throw<Exception>();
 

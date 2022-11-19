@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace SQJ22;
 
-public readonly record struct Entity(GridSpace Space, EntityData Data, Point Position)
+public readonly record struct Entity(GridSpace Space, EntityData Data, Point Position, Direction Direction)
 {
     public IEnumerable<CellPosition> CellPositions()
     {
@@ -18,14 +18,13 @@ public readonly record struct Entity(GridSpace Space, EntityData Data, Point Pos
     public void AttemptMove(Point offset)
     {
         var newEntity = this with {Position = Position + offset};
-        Space.RemoveEntity(this);
+        Space.RemoveEntityMatchingData(Data);
         var canMove = true;
 
         var nudgeSequence = new SequenceTween();
         var moveSequence = new SequenceTween();
         var blockSequence = new SequenceTween();
 
-        
         foreach (var newCellPosition in newEntity.CellPositions())
         {
             if (Space.HasEntityAt(newCellPosition.Global))
@@ -38,8 +37,9 @@ public readonly record struct Entity(GridSpace Space, EntityData Data, Point Pos
                 }
 
                 var nudgedEntity = nudgedMaybeEntity.Value;
-                nudgeSequence.Add(nudgedEntity.Data.Behavior.Nudged.Execute(this));
-                nudgeSequence.Add(GameplayEvents.AnimateNudged(nudgedEntity.Data.RenderHandle, offset));
+                var nudgedEntityData = nudgedEntity.Data;
+                nudgeSequence.Add(nudgedEntityData.Behavior.Nudged.Execute(Space, nudgedEntityData));
+                nudgeSequence.Add(GameplayEvents.AnimateNudged(nudgedEntityData.RenderHandle, offset));
             }
 
             if (!Space.ContainsCell(newCellPosition.Global))
@@ -51,16 +51,16 @@ public readonly record struct Entity(GridSpace Space, EntityData Data, Point Pos
         if (canMove)
         {
             Space.AddEntity(newEntity);
-            moveSequence.Add(Data.Behavior.Moved.Execute(this));
+            moveSequence.Add(Data.Behavior.Moved.Execute(Space, Data));
             moveSequence.Add(GameplayEvents.AnimateMove(newEntity.Data.RenderHandle, offset));
         }
         else
         {
             Space.AddEntity(this);
-            blockSequence.Add(Data.Behavior.Blocked.Execute(this));
+            blockSequence.Add(Data.Behavior.Blocked.Execute(Space, Data));
             blockSequence.Add(GameplayEvents.AnimateBlock(Data.RenderHandle, offset));
         }
-        
+
         var animation = ServiceLocator.Locate<Animation>();
         animation.Enqueue(moveSequence);
         animation.Enqueue(blockSequence);

@@ -12,7 +12,7 @@ public class LogConsoleAction : ITokenAction
         _message = message;
     }
 
-    public ITween Execute(Entity entity)
+    public ITween Execute(GridSpace space, EntityData data)
     {
         return new CallbackTween(() => Client.Debug.Log(_message));
     }

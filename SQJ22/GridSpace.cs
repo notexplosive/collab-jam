@@ -45,13 +45,13 @@ public class GridSpace
 
     public bool CanAddEntity(EntityData entityData, Point position)
     {
-        var newRecord = new Entity(this, entityData, position);
+        var newRecord = new Entity(this, entityData, position, Direction.None);
         return CanAddEntity(newRecord);
     }
 
-    public EntityData AddEntityFromData(EntityData entityData, Point position)
+    public EntityData AddEntityFromData(EntityData entityData, Point position, Direction direction)
     {
-        var newRecord = new Entity(this, entityData, position);
+        var newRecord = new Entity(this, entityData, position, direction);
         if (CanAddEntity(newRecord))
         {
             AddEntity(newRecord);
@@ -61,9 +61,17 @@ public class GridSpace
         throw new Exception("Cannot add entity");
     }
 
-    public void AddEntity(Entity entity)
+    public void AddEntity(Entity newEntity)
     {
-        _entities.Add(entity);
+        foreach (var entity in _entities)
+        {
+            if (entity.Data == newEntity.Data)
+            {
+                throw new Exception("Duplicate entity");
+            }
+        }
+        
+        _entities.Add(newEntity);
     }
 
     public bool HasEntityAt(Point cell)
@@ -112,19 +120,17 @@ public class GridSpace
         return _entities;
     }
 
-    public void AttemptWarpEntity(EntityData targetData, Point offset)
+    public void AttemptWarpEntity(Entity entityBeforeWarp, Point offset)
     {
-        var oldEntity = GetEntityFromData(targetData);
-
-        var newEntity = new Entity(this, targetData, oldEntity.Position + offset);
-        RemoveEntity(oldEntity);
+        var newEntity = entityBeforeWarp with {Position = entityBeforeWarp.Position + offset};
+        RemoveEntity(entityBeforeWarp);
         if (CanAddEntity(newEntity))
         {
             AddEntity(newEntity);
         }
         else
         {
-            AddEntity(oldEntity);
+            AddEntity(entityBeforeWarp);
         }
     }
 
@@ -133,7 +139,12 @@ public class GridSpace
         _entities.Remove(entity);
     }
 
-    private Entity GetEntityFromData(EntityData targetData)
+    public void RemoveEntityMatchingData(EntityData data)
+    {
+        RemoveEntity(GetEntityFromData(data));
+    }
+
+    public Entity GetEntityFromData(EntityData targetData)
     {
         foreach (var record in _entities)
         {

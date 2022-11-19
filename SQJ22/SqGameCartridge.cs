@@ -47,11 +47,15 @@ public class SqGameCartridge : BasicGameCartridge
                 ,
                 new TokenBehavior()
                     .OnTapped(
-                        new MoveTokenAction()
+                        new MoveInFacingDirectionAction(),
+                        new MoveInFacingDirectionAction(),
+                        new RotateAction(Rotation.Clockwise)
                     )
                 ,
-                new DebugRenderer()),
-            new Point(2, 2)
+                new DebugRenderer()
+            ),
+            new Point(2, 2),
+            Direction.Right
         );
 
         _e1 = _space.AddEntityFromData(
@@ -65,11 +69,13 @@ public class SqGameCartridge : BasicGameCartridge
                 ,
                 new TokenBehavior()
                     .OnTapped(
-                        new MoveTokenAction()
+                        new MoveInFacingDirectionAction(),
+                        new RotateAction(Rotation.CounterClockwise)
                     )
                 ,
                 new DebugRenderer()),
-            new Point(5, 2)
+            new Point(5, 2),
+            Direction.Down
         );
     }
 

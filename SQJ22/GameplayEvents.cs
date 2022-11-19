@@ -14,7 +14,7 @@ public static class GameplayEvents
                     var result = new SequenceTween();
                     foreach (var entity in sourceEntity.GetAdjacentEntities())
                     {
-                        result.Add(entity.Data.Behavior.AdjacentTapped.Execute(entity));
+                        result.Add(entity.Data.Behavior.AdjacentTapped.Execute(entity.Space, entity.Data));
                         result.Add(GameplayEvents.AnimateTapAdjacent());
                     }
 
@@ -32,7 +32,7 @@ public static class GameplayEvents
     {
         return new SequenceTween()
                 .Add(GameplayEvents.TriggerTapAdjacent(entity))
-                .Add(entity.Data.Behavior.Tapped.Execute(entity))
+                .Add(entity.Data.Behavior.Tapped.Execute(entity.Space, entity.Data))
                 .Add(GameplayEvents.AnimateTap(entity.Data.RenderHandle))
             ;
     }

@@ -56,12 +56,12 @@ public class TokenBehavior
     {
         private readonly List<ITokenAction> _actions = new();
 
-        public ITween Execute(Entity entity)
+        public ITween Execute(GridSpace space, EntityData data)
         {
             var result = new SequenceTween();
             foreach (var action in _actions)
             {
-                result.Add(action.Execute(entity));
+                result.Add(action.Execute(space, data));
             }
 
             return result;

@@ -70,7 +70,7 @@ public class GridHoverer
                     Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas)) - _grabState.Offset;
                 if (space.CanAddEntity(dropped.Data, droppedPosition))
                 {
-                    space.AddEntityFromData(dropped.Data, droppedPosition);
+                    space.AddEntityFromData(dropped.Data, droppedPosition, dropped.Direction);
                 }
                 else
                 {
@@ -98,7 +98,7 @@ public class GridHoverer
         public static HoverState Empty = new(null, Point.Zero);
         public bool IsNotEmpty => this != HoverState.Empty;
         public bool IsEmpty => this == HoverState.Empty;
-        public Entity Entity => MaybeEntity.HasValue ? MaybeEntity.Value : throw new Exception("HoverState was empty");
+        public Entity Entity => MaybeEntity ?? throw new Exception("HoverState was empty");
     }
 
     public readonly record struct GrabState(Entity? MaybeEntity, Point Offset)
@@ -107,8 +107,8 @@ public class GridHoverer
         public bool IsNotEmpty => this != GrabState.Empty;
 
         public EntityData Data =>
-            MaybeEntity.HasValue ? MaybeEntity.Value.Data : throw new Exception("GrabState was empty");
+            MaybeEntity != null ? MaybeEntity.Value.Data : throw new Exception("GrabState was empty");
 
-        public Entity Entity => MaybeEntity.HasValue ? MaybeEntity.Value : throw new Exception("GrabState was empty");
+        public Entity Entity => MaybeEntity ?? throw new Exception("GrabState was empty");
     }
 }
