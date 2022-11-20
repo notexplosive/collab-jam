@@ -155,6 +155,11 @@ public class SqGameCartridge : BasicGameCartridge
                     DrawMacros.DrawOverlayTextureOnEntity(painter, entity, _spaceRenderer.Settings, arrows,
                         entity.Direction.ToVector2() * 60f, overlayDepth);
                 }
+                else
+                {
+                    DrawMacros.DrawOverlayTextureOnEntity(painter, entity, _spaceRenderer.Settings, Client.Assets.GetTexture("selection"),
+                        new Vector2(-20,-20), overlayDepth);
+                }
             }
         }
 

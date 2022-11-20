@@ -61,7 +61,7 @@ public static class EntityDataLibrary
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 0)
-                .AddCell(-1, 0)
+                .AddCell(2, 0)
             ,
             new TokenBehavior()
                 .OnTapped(
