@@ -7,5 +7,10 @@ public class Battle
         CurrentEncounter = new Encounter();
     }
 
-    public Encounter CurrentEncounter { get; }
+    public Encounter CurrentEncounter { get; private set; }
+
+    public void StartNextEncounter()
+    {
+        CurrentEncounter = new Encounter();
+    }
 }

@@ -4,8 +4,6 @@ namespace SQJ22;
 
 public class Encounter
 {
-    public BattleAgent EnemyAgent { get; }
-
     public Encounter()
     {
         EnemyAgent = new BattleAgent(100);
@@ -14,6 +12,7 @@ public class Encounter
         EnemyMove = new EnemyMove();
     }
 
+    public BattleAgent EnemyAgent { get; }
     public BattleAgent PlayerAgent { get; }
     public StatusEffects StatusEffects { get; } = new();
     public PlayerMove PlayerMove { get; }
@@ -25,9 +24,22 @@ public class Encounter
 
         animation.Enqueue(new DynamicTween(() => new SequenceTween()
             .Add(GameplayEvents.IncrementStatusEffectTurn())
-            .Add(GameplayEvents.AnimatePlayerAttack(EnemyAgent, PlayerMove.PendingDamage))
-            .Add(GameplayEvents.AnimateEnemyTurn())
-            .Add(new CallbackTween(PlayerMove.StartTurn))));
+            .Add(GameplayEvents.AnimatePlayerAttack(EnemyAgent, PlayerMove.PendingDamage))));
+
+        animation.Enqueue(new DynamicTween(() =>
+            {
+                if (!EnemyAgent.IsDead)
+                {
+                    return new SequenceTween()
+                        .Add(GameplayEvents.AnimateEnemyTurn())
+                        .Add(new CallbackTween(PlayerMove.StartTurn));
+                }
+
+                return new SequenceTween()
+                        .Add(new CallbackTween(() => ServiceLocator.Locate<Battle>().StartNextEncounter()))
+                    ;
+            }
+        ));
     }
 
     public void PlanNewEnemyMove()
