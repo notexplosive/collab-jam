@@ -64,7 +64,7 @@ public class SqGameCartridge : BasicGameCartridge
                 ,
                 new TokenBehavior()
                     .OnTapped(
-                        new DealDamageAction()
+                        new DealDamageAction(5)
                     )
                 ,
                 new DebugRenderer()
@@ -140,13 +140,16 @@ public class SqGameCartridge : BasicGameCartridge
             if (_hoverer.PollForTap())
             {
                 var battle = ServiceLocator.Locate<Battle>();
-                battle.CurrentPlayerMove.LoseEnergy();
-                Client.Debug.Log($"{battle.CurrentPlayerMove.Energy} energy remaining");
+                battle.CurrentPlayerMove.LoseOneEnergy();
 
                 if (battle.CurrentPlayerMove.IsOutOfEnergy())
                 {
-                    battle.ExecuteEnemyTurn();
+                    battle.ExecutePlayerAndEnemyTurn();
                     Client.Debug.Log("Player turn is over");
+                }
+                else
+                {
+                    Client.Debug.Log($"{battle.CurrentPlayerMove.Energy} energy remaining");
                 }
             }
         }

@@ -82,4 +82,11 @@ public static class GameplayEvents
                 .Add(GameplayEvents.LogMessage("Enemy finished attacking."))
             ;
     }
+
+    public static ITween AnimatePlayerAttack(BattleAgent enemy, int damage)
+    {
+        return new SequenceTween()
+            .Add(new CallbackTween(() => enemy.TakeDamage(damage)))
+            .Add(GameplayEvents.LogMessage($"Dealt {damage} damage"));
+    }
 }

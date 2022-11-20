@@ -7,12 +7,25 @@ public class PlayerMove
     public PlayerMove(int maxEnergy)
     {
         _maxEnergy = maxEnergy;
+        StartTurn();
+    }
+
+    public void StartTurn()
+    {
+        PendingDamage = 0;
         Energy = _maxEnergy;
+
     }
 
     public int Energy { get; private set; }
+    public int PendingDamage { get; private set; }
 
-    public void LoseEnergy()
+    public void AddPendingDamage(int amount = 0)
+    {
+        PendingDamage += amount;
+    }
+    
+    public void LoseOneEnergy()
     {
         Energy--;
     }
@@ -22,7 +35,7 @@ public class PlayerMove
         return Energy <= 0;
     }
 
-    public void RestoreEnergy(int amount = 1)
+    public void GainEnergy(int amount = 1)
     {
         Energy += amount;
         if (Energy > _maxEnergy)
