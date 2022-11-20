@@ -167,7 +167,11 @@ public class GridSpace
         var set = new HashSet<EntityData>();
         foreach (var cell in zone.Cells())
         {
-             set.Add(GetEntityDataAt(cell));
+            var item = GetEntityDataAt(cell);
+            if (item != null)
+            {
+                set.Add(item);
+            }
         }
 
         return set;
