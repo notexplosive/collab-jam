@@ -15,7 +15,6 @@ public class SqGameCartridge : BasicGameCartridge
 {
     private readonly bool _isInShop = false;
     private EntityData _e1;
-    private float _elapsedTime;
     private GridSpaceRenderer _gridRenderer;
     private GridHoverer _hoverer;
     private GridSpace _space;
@@ -50,6 +49,7 @@ public class SqGameCartridge : BasicGameCartridge
     {
         ServiceLocator.Register(new Animation(false));
         ServiceLocator.Register(new Battle());
+        ServiceLocator.Register(new RuntimeClock());
 
         _gridRenderer = new GridSpaceRenderer();
         _space = new GridSpace(10, 10);
@@ -118,7 +118,7 @@ public class SqGameCartridge : BasicGameCartridge
 
     public override void Update(float dt)
     {
-        _elapsedTime += dt;
+        ServiceLocator.Locate<RuntimeClock>().Update(dt);
         var animation = ServiceLocator.Locate<Animation>();
         animation.Update(dt);
 
@@ -183,23 +183,8 @@ public class SqGameCartridge : BasicGameCartridge
                 if (entity.Direction != Direction.None)
                 {
                     var arrows = GetArrowTexture(entity.Direction);
-                    foreach (var cellPosition in entity.CellPositions())
-                    {
-                        var destinationRect = new Rectangle(
-                            _gridRenderer.Settings.CellPositionToRenderedPosition(cellPosition.Global).ToPoint(),
-                            _gridRenderer.Settings.CellSizeAsPoint);
-
-                        var sourceRect = destinationRect;
-                        sourceRect.Location -= (_elapsedTime * entity.Direction.ToVector2() * 60f).ToPoint();
-
-                        painter.DrawAsRectangle(arrows, destinationRect,
-                            new DrawSettings
-                            {
-                                SourceRectangle = sourceRect,
-                                Color = Color.White.WithMultipliedOpacity(0.5f),
-                                Depth = Depth.Middle - 250
-                            });
-                    }
+                    DrawMacros.DrawOverlayTextureOnEntity(painter, entity, _gridRenderer.Settings, arrows,
+                        entity.Direction.ToVector2() * 60f);
                 }
             }
         }
