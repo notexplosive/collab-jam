@@ -14,7 +14,6 @@ namespace SQJ22;
 public class SqGameCartridge : BasicGameCartridge
 {
     private readonly bool _isInShop = false;
-    private readonly StatusEffects _statusEffects = new();
     private EntityData _e1;
     private GridHoverer _hoverer;
     private GridSpace _space;
@@ -115,15 +114,17 @@ public class SqGameCartridge : BasicGameCartridge
             new Point(5, 2),
             Direction.Down
         );
-        
+
+
+        var battle = ServiceLocator.Locate<Battle>();
         
         var statusEffectZone = new Grid().AddCell(0, 0).AddCell(1, 1).AddCell(1, 0).AddCell(0, 1);
         
-        _statusEffects.AddStatusEffect(
+        battle.StatusEffects.AddStatusEffect(
             StatusEffects.CreateLockoutZone(statusEffectZone));
         
-        _statusEffects.AddStatusEffect(
-            StatusEffects.CreateExclamationEntity(_space,_e1));
+        battle.StatusEffects.AddStatusEffect(
+            StatusEffects.CreateLockoutEntity(_space,_e1));
     }
 
     public override void Update(float dt)
@@ -176,7 +177,7 @@ public class SqGameCartridge : BasicGameCartridge
 
         _spaceRenderer.DrawEntities(painter, _space, entityDepth);
         _spaceRenderer.DrawSpace(painter, _space, spaceDepth);
-        _spaceRenderer.DrawStatusEffects(painter, _statusEffects, _spaceRenderer.Settings, statusEffectDepth);
+        _spaceRenderer.DrawStatusEffects(painter, ServiceLocator.Locate<Battle>().StatusEffects, _spaceRenderer.Settings, statusEffectDepth);
 
         var mousePosCell = _spaceRenderer.Settings.GetGridPositionFromWorldPosition(
             Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));

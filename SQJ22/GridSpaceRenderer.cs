@@ -53,7 +53,7 @@ public class GridSpaceRenderer
         {
             foreach (var cell in statusEffect.Target.CellPositions())
             {
-                DrawMacros.DrawOverlayTextureOnCell(painter, cell, settings, statusEffect.Texture, Vector2.Zero, depth);
+                DrawMacros.DrawOverlayTextureOnCell(painter, cell, settings, statusEffect.Template.Texture, Vector2.Zero, depth);
             }
         }
     }

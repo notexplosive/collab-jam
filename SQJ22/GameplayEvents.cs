@@ -89,4 +89,13 @@ public static class GameplayEvents
             .Add(new CallbackTween(() => enemy.TakeDamage(damage)))
             .Add(GameplayEvents.LogMessage($"Dealt {damage} damage"));
     }
+
+    public static ITween IncrementStatusEffectTurn()
+    {
+        return new SequenceTween()
+            .Add(new CallbackTween(() =>
+            {
+                ServiceLocator.Locate<Battle>().StatusEffects.IncrementTurn();
+            }));
+    }
 }

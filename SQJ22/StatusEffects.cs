@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ExplogineMonoGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,36 +35,26 @@ public class StatusEffects
 
     public static Instance CreateLockoutZone(Grid statusEffectZone, int duration = 1)
     {
-        return new Instance(new ZoneTarget(statusEffectZone), Client.Assets.GetTexture("lockout"), duration);
+        return new Instance(new ZoneTarget(statusEffectZone), Templates.Lockout, duration);
     }
-    
-    public static Instance CreateExclamationZone(Grid statusEffectZone, int duration = 1)
-    {
-        return new Instance(new ZoneTarget(statusEffectZone), Client.Assets.GetTexture("exclamation"), duration);
-    }
-    
+
     public static Instance CreateLockoutEntity(GridSpace space, EntityData target, int duration = 1)
     {
-        return new Instance(new EntityTarget(space, target), Client.Assets.GetTexture("exclamation"), duration);
-    }
-    
-    public static Instance CreateExclamationEntity(GridSpace space, EntityData target, int duration = 1)
-    {
-        return new Instance(new EntityTarget(space, target), Client.Assets.GetTexture("lockout"), duration);
+        return new Instance(new EntityTarget(space, target), Templates.Lockout, duration);
     }
 
     public class Instance
     {
-        public Instance(ITarget target, Texture2D texture, int numberOfTurns)
+        public Instance(ITarget target, Template template, int numberOfTurns)
         {
             Target = target;
             NumberOfTurns = numberOfTurns;
-            Texture = texture;
+            Template = template;
         }
 
         public ITarget Target { get; }
         public int NumberOfTurns { get; private set; }
-        public Texture2D Texture { get; }
+        public Template Template { get; }
 
         public void IncrementTurn()
         {
@@ -116,5 +107,23 @@ public class StatusEffects
         {
             return _grid.Cells();
         }
+    }
+
+    public class Template
+    {
+        private readonly Lazy<Texture2D> _lazyTexture;
+
+        public Template(string textureName)
+        {
+            _lazyTexture = new Lazy<Texture2D>(() => Client.Assets.GetTexture(textureName));
+        }
+
+        public Texture2D Texture => _lazyTexture.Value;
+    }
+
+    public static class Templates
+    {
+        public static readonly Template Exclamation = new("exclamation");
+        public static readonly Template Lockout = new("lockout");
     }
 }

@@ -6,6 +6,7 @@ public class Battle
 {
     private readonly BattleAgent _enemy;
     private readonly BattleAgent _player;
+    public StatusEffects StatusEffects { get; } = new();
 
     public Battle()
     {
@@ -21,6 +22,7 @@ public class Battle
         var animation = ServiceLocator.Locate<Animation>();
         
         animation.Enqueue(new DynamicTween(() => new SequenceTween()
+            .Add(GameplayEvents.IncrementStatusEffectTurn())
             .Add(GameplayEvents.AnimatePlayerAttack(_enemy, CurrentPlayerMove.PendingDamage))
             .Add(GameplayEvents.AnimateEnemyTurn())
             .Add(new CallbackTween(CurrentPlayerMove.StartTurn))));
