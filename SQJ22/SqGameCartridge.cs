@@ -15,10 +15,10 @@ public class SqGameCartridge : BasicGameCartridge
 {
     private readonly bool _isInShop = false;
     private EntityData _e1;
+    private float _elapsedTime;
     private GridSpaceRenderer _gridRenderer;
     private GridHoverer _hoverer;
     private GridSpace _space;
-    private float _elapsedTime;
 
     public override CartridgeConfig CartridgeConfig { get; } = new(new Point(1920, 1080));
 
@@ -36,7 +36,8 @@ public class SqGameCartridge : BasicGameCartridge
                 var canvas = new Canvas(arrowTexture.Width, arrowTexture.Height);
                 Client.Graphics.PushCanvas(canvas);
                 painter.BeginSpriteBatch(SamplerState.LinearWrap);
-                painter.DrawAtPosition(arrowTexture, new Vector2(arrowTexture.Width, arrowTexture.Height) / 2, Scale2D.One,
+                painter.DrawAtPosition(arrowTexture, new Vector2(arrowTexture.Width, arrowTexture.Height) / 2,
+                    Scale2D.One,
                     new DrawSettings {Angle = direction.ToAngle(), Origin = DrawOrigin.Center});
                 painter.EndSpriteBatch();
                 Client.Graphics.PopCanvas();
@@ -48,10 +49,29 @@ public class SqGameCartridge : BasicGameCartridge
     public override void OnCartridgeStarted()
     {
         ServiceLocator.Register(new Animation(false));
+        ServiceLocator.Register(new Battle());
 
         _gridRenderer = new GridSpaceRenderer();
         _space = new GridSpace(10, 10);
         _hoverer = new GridHoverer();
+
+        _space.AddEntityFromData(
+            new EntityData(
+                new Grid()
+                    .AddCell(0, 0)
+                    .AddCell(1, 0)
+                    .AddCell(-1, 0)
+                ,
+                new TokenBehavior()
+                    .OnTapped(
+                        new DealDamageAction()
+                    )
+                ,
+                new DebugRenderer()
+            ),
+            new Point(1, 1),
+            Direction.None
+        );
 
         _space.AddEntityFromData(
             new EntityData(
@@ -117,7 +137,18 @@ public class SqGameCartridge : BasicGameCartridge
         }
         else
         {
-            _hoverer.PollForTap();
+            if (_hoverer.PollForTap())
+            {
+                var battle = ServiceLocator.Locate<Battle>();
+                battle.CurrentPlayerMove.LoseEnergy();
+                Client.Debug.Log($"{battle.CurrentPlayerMove.Energy} energy remaining");
+
+                if (battle.CurrentPlayerMove.IsOutOfEnergy())
+                {
+                    battle.ExecuteEnemyTurn();
+                    Client.Debug.Log("Player turn is over");
+                }
+            }
         }
     }
 
@@ -163,7 +194,7 @@ public class SqGameCartridge : BasicGameCartridge
                             {
                                 SourceRectangle = sourceRect,
                                 Color = Color.White.WithMultipliedOpacity(0.5f),
-                                Depth = Depth.Middle - 250,
+                                Depth = Depth.Middle - 250
                             });
                     }
                 }

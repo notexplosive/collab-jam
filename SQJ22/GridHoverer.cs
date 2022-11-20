@@ -82,15 +82,18 @@ public class GridHoverer
         }
     }
 
-    public void PollForTap()
+    public bool PollForTap()
     {
         if (_hoverState.IsNotEmpty)
         {
             if (Client.Input.Mouse.GetButton(MouseButton.Left).WasPressed)
             {
                 _hoverState.Entity.Tap();
+                return true;
             }
         }
+
+        return false;
     }
 
     public readonly record struct HoverState(Entity? MaybeEntity, Point HoveredCell)

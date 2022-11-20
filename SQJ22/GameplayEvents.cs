@@ -62,7 +62,8 @@ public static class GameplayEvents
     public static ITween AnimateBlock(RenderHandle blockedEntityRenderHandle, Point offset)
     {
         return new SequenceTween()
-                .Add(new Tween<Vector2>(blockedEntityRenderHandle.Offset, offset.ToVector2() / 4, 0.05f, Ease.QuadFastSlow))
+                .Add(new Tween<Vector2>(blockedEntityRenderHandle.Offset, offset.ToVector2() / 4, 0.05f,
+                    Ease.QuadFastSlow))
                 .Add(new Tween<Vector2>(blockedEntityRenderHandle.Offset, Vector2.Zero, 0.10f, Ease.QuadSlowFast))
             ;
     }
@@ -71,5 +72,14 @@ public static class GameplayEvents
     {
         // todo
         return new SequenceTween();
+    }
+
+    public static ITween AnimateEnemyTurn()
+    {
+        return new SequenceTween()
+                .Add(GameplayEvents.LogMessage("Enemy attacks"))
+                .Add(new WaitSecondsTween(0.5f))
+                .Add(GameplayEvents.LogMessage("Enemy finished attacking."))
+            ;
     }
 }
