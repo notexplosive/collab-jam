@@ -41,7 +41,7 @@ public class BattleEncounter : IEncounter
                 }
 
                 return new SequenceTween()
-                        .Add(new CallbackTween(() => ServiceLocator.Locate<Battle>().StartNextEncounter()))
+                        .Add(new CallbackTween(() => ServiceLocator.Locate<Battle>().StartShop()))
                     ;
             }
         ));

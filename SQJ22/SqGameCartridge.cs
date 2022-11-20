@@ -8,15 +8,15 @@ using ExplogineMonoGame.Data;
 using ExplogineMonoGame.HitTesting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace SQJ22;
 
 public class SqGameCartridge : BasicGameCartridge
 {
-    private readonly bool _isInShop = false;
-    private EntityData _e1;
     private GridHoverer _hoverer;
     private GridSpaceRenderer _spaceRenderer;
+    private bool IsInShop => ServiceLocator.Locate<Battle>().InternalEncounter is ShopEncounter;
     private GridSpace Space => ServiceLocator.Locate<GridSpace>();
 
     public override CartridgeConfig CartridgeConfig { get; } = new(new Point(1920, 1080));
@@ -73,7 +73,7 @@ public class SqGameCartridge : BasicGameCartridge
             Direction.None
         );
 
-        _e1 = Space.AddEntityFromData(
+        Space.AddEntityFromData(
             EntityDataLibrary.E1,
             new Point(5, 2),
             Direction.Down
@@ -95,7 +95,7 @@ public class SqGameCartridge : BasicGameCartridge
         _hoverer.UpdateHitTest(Space, _spaceRenderer.Settings, hitTestStack);
         hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
 
-        if (_isInShop)
+        if (IsInShop)
         {
             _hoverer.UpdateDrag(Space, _spaceRenderer.Settings);
         }
@@ -124,11 +124,15 @@ public class SqGameCartridge : BasicGameCartridge
         var statusEffectDepth = overlayDepth + 10;
         var previewDepth = overlayDepth + 20;
 
-        var encounter = ServiceLocator.Locate<Battle>().BattleEncounter;
+        var battleEncounter = ServiceLocator.Locate<Battle>().BattleEncounter;
 
         _spaceRenderer.DrawEntities(painter, Space, entityDepth);
         _spaceRenderer.DrawSpace(painter, Space, spaceDepth);
-        _spaceRenderer.DrawStatusEffects(painter, encounter.StatusEffects, _spaceRenderer.Settings, statusEffectDepth);
+        if (battleEncounter != null)
+        {
+            _spaceRenderer.DrawStatusEffects(painter, battleEncounter.StatusEffects, _spaceRenderer.Settings,
+                statusEffectDepth);
+        }
 
         var mousePosCell = _spaceRenderer.Settings.GetGridPositionFromWorldPosition(
             Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
@@ -157,24 +161,41 @@ public class SqGameCartridge : BasicGameCartridge
                 }
                 else
                 {
-                    DrawMacros.DrawOverlayTextureOnEntity(painter, entity, _spaceRenderer.Settings, Client.Assets.GetTexture("selection"),
-                        new Vector2(-20,-20), overlayDepth);
+                    DrawMacros.DrawOverlayTextureOnEntity(painter, entity, _spaceRenderer.Settings,
+                        Client.Assets.GetTexture("selection"),
+                        new Vector2(-20, -20), overlayDepth);
                 }
             }
         }
 
-        encounter.EnemyMove.CurrentAttack?.DrawPreview(painter, _spaceRenderer.Settings, previewDepth);
+        if (battleEncounter != null)
+        {
+            battleEncounter.EnemyMove.CurrentAttack?.DrawPreview(painter, _spaceRenderer.Settings, previewDepth);
 
-        if (encounter.EnemyMove.CurrentAttack != null)
+            if (battleEncounter.EnemyMove.CurrentAttack != null)
+            {
+                painter.DrawStringAtPosition(Client.Assets.GetFont("GameFont", 70),
+                    $"Enemy is going to: {battleEncounter.EnemyMove.CurrentAttack.Description()}\n" +
+                    $"Player is going to deal {battleEncounter.PlayerMove.PendingDamage} damage\n" +
+                    $"Player has {battleEncounter.PlayerMove.Energy} energy\n" +
+                    $"Player has {battleEncounter.PlayerAgent.Health} HP\n" +
+                    $"Enemy has {battleEncounter.EnemyAgent.Health} HP",
+                    new Point(10, 10),
+                    new DrawSettings {Color = Color.White, Depth = overlayDepth});
+            }
+        }
+
+        if (IsInShop)
         {
             painter.DrawStringAtPosition(Client.Assets.GetFont("GameFont", 70),
-                $"Enemy is going to: {encounter.EnemyMove.CurrentAttack.Description()}\n" +
-                $"Player is going to deal {encounter.PlayerMove.PendingDamage} damage\n" +
-                $"Player has {encounter.PlayerMove.Energy} energy\n" +
-                $"Player has {encounter.PlayerAgent.Health} HP\n" +
-                $"Enemy has {encounter.EnemyAgent.Health} HP",
+                "SHOP\nPress Enter to start next fight",
                 new Point(10, 10),
                 new DrawSettings {Color = Color.White, Depth = overlayDepth});
+
+            if (Client.Input.Keyboard.GetButton(Keys.Enter).WasPressed)
+            {
+                ServiceLocator.Locate<Battle>().StartNextBattle();
+            }
         }
 
         painter.EndSpriteBatch();
