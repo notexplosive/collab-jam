@@ -1,4 +1,5 @@
-﻿using ExplogineCore.Data;
+﻿using System;
+using ExplogineCore.Data;
 using ExplogineMonoGame;
 using ExplogineMonoGame.Data;
 using Microsoft.Xna.Framework;
@@ -40,8 +41,20 @@ public class GridSpaceRenderer
         if (space.ContainsCell(cellPosition))
         {
             painter.DrawRectangle(
-                new Rectangle(Settings.CellPositionToRenderedPosition(cellPosition).ToPoint(), Settings.CellSizeAsPoint),
+                new Rectangle(Settings.CellPositionToRenderedPosition(cellPosition).ToPoint(),
+                    Settings.CellSizeAsPoint),
                 new DrawSettings {Depth = depth, Color = Color.Yellow.WithMultipliedOpacity(0.5f)});
+        }
+    }
+
+    public void DrawStatusEffects(Painter painter, StatusEffects statusEffects, RenderSettings settings, Depth depth)
+    {
+        foreach (var statusEffect in statusEffects.Instances())
+        {
+            foreach (var cell in statusEffect.Target.CellPositions())
+            {
+                DrawMacros.DrawOverlayTextureOnCell(painter, cell, settings, statusEffect.Texture, Vector2.Zero, depth);
+            }
         }
     }
 }

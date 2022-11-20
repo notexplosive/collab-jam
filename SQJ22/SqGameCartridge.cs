@@ -14,10 +14,11 @@ namespace SQJ22;
 public class SqGameCartridge : BasicGameCartridge
 {
     private readonly bool _isInShop = false;
+    private readonly StatusEffects _statusEffects = new();
     private EntityData _e1;
-    private GridSpaceRenderer _gridRenderer;
     private GridHoverer _hoverer;
     private GridSpace _space;
+    private GridSpaceRenderer _spaceRenderer;
 
     public override CartridgeConfig CartridgeConfig { get; } = new(new Point(1920, 1080));
 
@@ -51,7 +52,7 @@ public class SqGameCartridge : BasicGameCartridge
         ServiceLocator.Register(new Battle());
         ServiceLocator.Register(new RuntimeClock());
 
-        _gridRenderer = new GridSpaceRenderer();
+        _spaceRenderer = new GridSpaceRenderer();
         _space = new GridSpace(10, 10);
         _hoverer = new GridHoverer();
 
@@ -114,6 +115,15 @@ public class SqGameCartridge : BasicGameCartridge
             new Point(5, 2),
             Direction.Down
         );
+        
+        
+        var statusEffectZone = new Grid().AddCell(0, 0).AddCell(1, 1).AddCell(1, 0).AddCell(0, 1);
+        
+        _statusEffects.AddStatusEffect(
+            StatusEffects.CreateLockoutZone(statusEffectZone));
+        
+        _statusEffects.AddStatusEffect(
+            StatusEffects.CreateExclamationEntity(_space,_e1));
     }
 
     public override void Update(float dt)
@@ -128,12 +138,12 @@ public class SqGameCartridge : BasicGameCartridge
         }
 
         var hitTestStack = new HitTestStack();
-        _hoverer.UpdateHitTest(_space, _gridRenderer.Settings, hitTestStack);
+        _hoverer.UpdateHitTest(_space, _spaceRenderer.Settings, hitTestStack);
         hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
 
         if (_isInShop)
         {
-            _hoverer.UpdateDrag(_space, _gridRenderer.Settings);
+            _hoverer.UpdateDrag(_space, _spaceRenderer.Settings);
         }
         else
         {
@@ -158,33 +168,40 @@ public class SqGameCartridge : BasicGameCartridge
     public override void Draw(Painter painter)
     {
         painter.BeginSpriteBatch(SamplerState.LinearWrap);
-        _gridRenderer.DrawEntities(painter, _space, Depth.Middle);
-        _gridRenderer.DrawSpace(painter, _space, Depth.Middle + 100);
+        var entityDepth = Depth.Middle;
+        var slightlyAboveEntityDepth = entityDepth - 10;
+        var spaceDepth = entityDepth + 100;
+        var overlayDepth = entityDepth - 200;
+        var statusEffectDepth = overlayDepth + 10;
 
-        var mousePosCell = _gridRenderer.Settings.GetGridPositionFromWorldPosition(
+        _spaceRenderer.DrawEntities(painter, _space, entityDepth);
+        _spaceRenderer.DrawSpace(painter, _space, spaceDepth);
+        _spaceRenderer.DrawStatusEffects(painter, _statusEffects, _spaceRenderer.Settings, statusEffectDepth);
+
+        var mousePosCell = _spaceRenderer.Settings.GetGridPositionFromWorldPosition(
             Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
 
         if (_hoverer.HasGrabbed)
         {
             foreach (var cell in _hoverer.Grabbed.Data.Body.Cells())
             {
-                _gridRenderer.HighlightCell(painter, _space, cell + mousePosCell - _hoverer.Grabbed.Offset,
-                    Depth.Middle - 200);
+                _spaceRenderer.HighlightCell(painter, _space, cell + mousePosCell - _hoverer.Grabbed.Offset,
+                    slightlyAboveEntityDepth);
             }
         }
         else
         {
-            _gridRenderer.HighlightCell(painter, _space, mousePosCell, Depth.Middle - 200);
+            // _spaceRenderer.HighlightCell(painter, _space, mousePosCell, overlayDepth);
 
-            // Draw arrows
             if (_hoverer.HasHoveredEntity())
             {
                 var entity = _hoverer.GetHoveredEntity();
                 if (entity.Direction != Direction.None)
                 {
+                    // Draw arrows
                     var arrows = GetArrowTexture(entity.Direction);
-                    DrawMacros.DrawOverlayTextureOnEntity(painter, entity, _gridRenderer.Settings, arrows,
-                        entity.Direction.ToVector2() * 60f);
+                    DrawMacros.DrawOverlayTextureOnEntity(painter, entity, _spaceRenderer.Settings, arrows,
+                        entity.Direction.ToVector2() * 60f, overlayDepth);
                 }
             }
         }
