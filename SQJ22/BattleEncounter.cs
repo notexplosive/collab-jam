@@ -2,9 +2,13 @@
 
 namespace SQJ22;
 
-public class Encounter
+public interface IEncounter
 {
-    public Encounter()
+}
+
+public class BattleEncounter : IEncounter
+{
+    public BattleEncounter()
     {
         EnemyAgent = new BattleAgent(100);
         PlayerAgent = new BattleAgent(50);
@@ -26,7 +30,8 @@ public class Encounter
             .Add(GameplayEvents.IncrementStatusEffectTurn())
             .Add(GameplayEvents.AnimatePlayerAttack(EnemyAgent, PlayerMove.PendingDamage))));
 
-        animation.Enqueue(new DynamicTween(() =>
+        animation.Enqueue(new DynamicTween(
+            () =>
             {
                 if (!EnemyAgent.IsDead)
                 {

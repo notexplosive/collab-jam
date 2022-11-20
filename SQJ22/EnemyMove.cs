@@ -97,7 +97,7 @@ public class EnemyMove
 
         public bool Execute()
         {
-            ServiceLocator.Locate<Battle>().CurrentEncounter.PlayerAgent.TakeDamage(_damage);
+            ServiceLocator.Locate<Battle>().BattleEncounter.PlayerAgent.TakeDamage(_damage);
             return true;
         }
 

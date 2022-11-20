@@ -88,7 +88,7 @@ public class GridHoverer
         {
             if (Client.Input.Mouse.GetButton(MouseButton.Left).WasPressed)
             {
-                var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
+                var encounter = ServiceLocator.Locate<Battle>().BattleEncounter;
         
                 var statusEffects = encounter.StatusEffects.GetStatusEffects(_hoverState.Entity);
 

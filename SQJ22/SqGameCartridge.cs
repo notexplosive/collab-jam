@@ -103,7 +103,7 @@ public class SqGameCartridge : BasicGameCartridge
         {
             if (_hoverer.PollForTap())
             {
-                var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
+                var encounter = ServiceLocator.Locate<Battle>().BattleEncounter;
                 encounter.PlayerMove.LoseOneEnergy();
 
                 if (encounter.PlayerMove.IsOutOfEnergy())
@@ -124,7 +124,7 @@ public class SqGameCartridge : BasicGameCartridge
         var statusEffectDepth = overlayDepth + 10;
         var previewDepth = overlayDepth + 20;
 
-        var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
+        var encounter = ServiceLocator.Locate<Battle>().BattleEncounter;
 
         _spaceRenderer.DrawEntities(painter, Space, entityDepth);
         _spaceRenderer.DrawSpace(painter, Space, spaceDepth);

@@ -77,7 +77,7 @@ public static class GameplayEvents
 
     public static ITween AnimateEnemyTurn()
     {
-        var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
+        var encounter = ServiceLocator.Locate<Battle>().BattleEncounter;
         return new SequenceTween()
                 .Add(new DynamicTween(() =>
                 {
@@ -112,7 +112,7 @@ public static class GameplayEvents
         return new SequenceTween()
             .Add(new CallbackTween(() =>
             {
-                ServiceLocator.Locate<Battle>().CurrentEncounter.StatusEffects.IncrementTurn();
+                ServiceLocator.Locate<Battle>().BattleEncounter.StatusEffects.IncrementTurn();
             }));
     }
 }

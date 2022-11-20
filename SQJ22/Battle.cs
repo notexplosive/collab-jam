@@ -4,13 +4,14 @@ public class Battle
 {
     public Battle()
     {
-        CurrentEncounter = new Encounter();
+        InternalEncounter = new BattleEncounter();
     }
 
-    public Encounter CurrentEncounter { get; private set; }
+    public IEncounter InternalEncounter { get; private set; }
+    public BattleEncounter BattleEncounter => InternalEncounter as BattleEncounter;
 
     public void StartNextEncounter()
     {
-        CurrentEncounter = new Encounter();
+        InternalEncounter = new BattleEncounter();
     }
 }

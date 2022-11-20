@@ -28,7 +28,7 @@ public static class AttackPool
             {
                 foreach (var data in space.GetEntityDatasInZone(zone, offset))
                 {
-                    battle.CurrentEncounter.StatusEffects.AddStatusEffect(
+                    battle.BattleEncounter.StatusEffects.AddStatusEffect(
                         StatusEffects.Templates.Lockout.CreateInstance(data));
                 }
             });
