@@ -19,7 +19,7 @@ public class DealDamageAction : ITokenAction
             .Add(new CallbackTween(() =>
             {
                 var battle = ServiceLocator.Locate<Battle>();
-                battle.CurrentPlayerMove.AddPendingDamage(_damageAmount);
+                battle.PlayerMove.AddPendingDamage(_damageAmount);
             }));
     }
 }

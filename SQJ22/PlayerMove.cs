@@ -10,21 +10,20 @@ public class PlayerMove
         StartTurn();
     }
 
+    public int Energy { get; private set; }
+    public int PendingDamage { get; private set; }
+
     public void StartTurn()
     {
         PendingDamage = 0;
         Energy = _maxEnergy;
-
     }
-
-    public int Energy { get; private set; }
-    public int PendingDamage { get; private set; }
 
     public void AddPendingDamage(int amount = 0)
     {
         PendingDamage += amount;
     }
-    
+
     public void LoseOneEnergy()
     {
         Energy--;

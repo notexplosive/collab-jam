@@ -16,8 +16,8 @@ public class SqGameCartridge : BasicGameCartridge
     private readonly bool _isInShop = false;
     private EntityData _e1;
     private GridHoverer _hoverer;
-    private GridSpace _space;
     private GridSpaceRenderer _spaceRenderer;
+    private GridSpace Space => ServiceLocator.Locate<GridSpace>();
 
     public override CartridgeConfig CartridgeConfig { get; } = new(new Point(1920, 1080));
 
@@ -50,12 +50,12 @@ public class SqGameCartridge : BasicGameCartridge
         ServiceLocator.Register(new Animation(false));
         ServiceLocator.Register(new Battle());
         ServiceLocator.Register(new RuntimeClock());
+        ServiceLocator.Register(new GridSpace(10, 10));
 
         _spaceRenderer = new GridSpaceRenderer();
-        _space = new GridSpace(10, 10);
         _hoverer = new GridHoverer();
 
-        _space.AddEntityFromData(
+        Space.AddEntityFromData(
             new EntityData(
                 new Grid()
                     .AddCell(0, 0)
@@ -73,7 +73,7 @@ public class SqGameCartridge : BasicGameCartridge
             Direction.None
         );
 
-        _space.AddEntityFromData(
+        Space.AddEntityFromData(
             new EntityData(
                 new Grid()
                     .AddCell(0, 0)
@@ -95,7 +95,7 @@ public class SqGameCartridge : BasicGameCartridge
             Direction.Right
         );
 
-        _e1 = _space.AddEntityFromData(
+        _e1 = Space.AddEntityFromData(
             new EntityData(
                 new Grid()
                     .AddCell(0, 0)
@@ -115,16 +115,15 @@ public class SqGameCartridge : BasicGameCartridge
             Direction.Down
         );
 
-
         var battle = ServiceLocator.Locate<Battle>();
-        
+
         var statusEffectZone = new Grid().AddCell(0, 0).AddCell(1, 1).AddCell(1, 0).AddCell(0, 1);
-        
+
         battle.StatusEffects.AddStatusEffect(
             StatusEffects.CreateLockoutZone(statusEffectZone));
-        
+
         battle.StatusEffects.AddStatusEffect(
-            StatusEffects.CreateLockoutEntity(_space,_e1));
+            StatusEffects.CreateLockoutEntity(Space, _e1));
     }
 
     public override void Update(float dt)
@@ -139,28 +138,28 @@ public class SqGameCartridge : BasicGameCartridge
         }
 
         var hitTestStack = new HitTestStack();
-        _hoverer.UpdateHitTest(_space, _spaceRenderer.Settings, hitTestStack);
+        _hoverer.UpdateHitTest(Space, _spaceRenderer.Settings, hitTestStack);
         hitTestStack.Resolve(Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
 
         if (_isInShop)
         {
-            _hoverer.UpdateDrag(_space, _spaceRenderer.Settings);
+            _hoverer.UpdateDrag(Space, _spaceRenderer.Settings);
         }
         else
         {
             if (_hoverer.PollForTap())
             {
                 var battle = ServiceLocator.Locate<Battle>();
-                battle.CurrentPlayerMove.LoseOneEnergy();
+                battle.PlayerMove.LoseOneEnergy();
 
-                if (battle.CurrentPlayerMove.IsOutOfEnergy())
+                if (battle.PlayerMove.IsOutOfEnergy())
                 {
                     battle.ExecutePlayerAndEnemyTurn();
                     Client.Debug.Log("Player turn is over");
                 }
                 else
                 {
-                    Client.Debug.Log($"{battle.CurrentPlayerMove.Energy} energy remaining");
+                    Client.Debug.Log($"{battle.PlayerMove.Energy} energy remaining");
                 }
             }
         }
@@ -174,10 +173,13 @@ public class SqGameCartridge : BasicGameCartridge
         var spaceDepth = entityDepth + 100;
         var overlayDepth = entityDepth - 200;
         var statusEffectDepth = overlayDepth + 10;
+        var previewDepth = overlayDepth + 20;
 
-        _spaceRenderer.DrawEntities(painter, _space, entityDepth);
-        _spaceRenderer.DrawSpace(painter, _space, spaceDepth);
-        _spaceRenderer.DrawStatusEffects(painter, ServiceLocator.Locate<Battle>().StatusEffects, _spaceRenderer.Settings, statusEffectDepth);
+        var battle = ServiceLocator.Locate<Battle>();
+
+        _spaceRenderer.DrawEntities(painter, Space, entityDepth);
+        _spaceRenderer.DrawSpace(painter, Space, spaceDepth);
+        _spaceRenderer.DrawStatusEffects(painter, battle.StatusEffects, _spaceRenderer.Settings, statusEffectDepth);
 
         var mousePosCell = _spaceRenderer.Settings.GetGridPositionFromWorldPosition(
             Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
@@ -186,7 +188,7 @@ public class SqGameCartridge : BasicGameCartridge
         {
             foreach (var cell in _hoverer.Grabbed.Data.Body.Cells())
             {
-                _spaceRenderer.HighlightCell(painter, _space, cell + mousePosCell - _hoverer.Grabbed.Offset,
+                _spaceRenderer.HighlightCell(painter, Space, cell + mousePosCell - _hoverer.Grabbed.Offset,
                     slightlyAboveEntityDepth);
             }
         }
@@ -207,6 +209,7 @@ public class SqGameCartridge : BasicGameCartridge
             }
         }
 
+        battle.EnemyMove.CurrentAttack?.DrawPreview(painter, _spaceRenderer.Settings, previewDepth);
         painter.EndSpriteBatch();
     }
 
