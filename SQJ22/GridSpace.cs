@@ -161,4 +161,15 @@ public class GridSpace
     {
         return cellPosition.X >= 0 && cellPosition.Y >= 0 && cellPosition.X < Size.X && cellPosition.Y < Size.Y;
     }
+
+    public IEnumerable<EntityData> GetEntityDatasInZone(Grid zone)
+    {
+        var set = new HashSet<EntityData>();
+        foreach (var cell in zone.Cells())
+        {
+             set.Add(GetEntityDataAt(cell));
+        }
+
+        return set;
+    }
 }

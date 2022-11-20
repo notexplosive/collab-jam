@@ -24,20 +24,16 @@ public class EnemyMove
 
     public class AttackZone : IAttack
     {
-        private readonly Action<GridSpace, Grid> _execute;
-        private readonly GridSpace _space;
-        private readonly Grid _zone;
+        private readonly ZoneAttack _zoneAttack;
 
-        public AttackZone(GridSpace space, Grid zone, Action<GridSpace, Grid> execute)
+        public AttackZone(ZoneAttack zoneAttack)
         {
-            _space = space;
-            _zone = zone;
-            _execute = execute;
+            _zoneAttack = zoneAttack;
         }
 
         public void Execute()
         {
-            _execute(_space, _zone);
+            _zoneAttack.Execute();
         }
 
         public string Description()
@@ -48,7 +44,7 @@ public class EnemyMove
 
         public void DrawPreview(Painter painter, RenderSettings settings, Depth depth)
         {
-            foreach (var cell in _zone.Cells())
+            foreach (var cell in _zoneAttack.Cells())
             {
                 DrawMacros.DrawOverlayTextureOnCell(painter, cell, settings, Client.Assets.GetTexture("exclamation"),
                     Vector2.Zero, depth);

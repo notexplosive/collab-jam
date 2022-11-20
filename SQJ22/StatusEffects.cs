@@ -40,7 +40,7 @@ public class StatusEffects
 
     public static Instance CreateLockoutEntity(GridSpace space, EntityData target, int duration = 1)
     {
-        return new Instance(new EntityTarget(space, target), Templates.Lockout, duration);
+        return new Instance(new EntityTarget(target), Templates.Lockout, duration);
     }
 
     public class Instance
@@ -77,9 +77,9 @@ public class StatusEffects
         private readonly GridSpace _space;
         private readonly EntityData _targetData;
 
-        public EntityTarget(GridSpace space, EntityData targetData)
+        public EntityTarget(EntityData targetData)
         {
-            _space = space;
+            _space = ServiceLocator.Locate<GridSpace>();
             _targetData = targetData;
         }
 
@@ -119,6 +119,16 @@ public class StatusEffects
         }
 
         public Texture2D Texture => _lazyTexture.Value;
+
+        public Instance CreateInstance(Grid zone)
+        {
+            return new Instance(new ZoneTarget(zone), this, 1);
+        }
+        
+        public Instance CreateInstance(EntityData data)
+        {
+            return new Instance(new EntityTarget(data), this, 1);
+        }
     }
 
     public static class Templates
