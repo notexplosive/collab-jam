@@ -57,6 +57,7 @@ public class SqGameCartridge : BasicGameCartridge
 
         Space.AddEntityFromData(
             new EntityData(
+                new EntityName("Melee Attack"),
                 new Grid()
                     .AddCell(0, 0)
                     .AddCell(1, 0)
@@ -74,29 +75,14 @@ public class SqGameCartridge : BasicGameCartridge
         );
 
         Space.AddEntityFromData(
-            new EntityData(
-                new Grid()
-                    .AddCell(0, 0)
-                    .AddCell(1, 0)
-                    .AddCell(0, 1)
-                    .AddCell(1, 1)
-                    .AddCell(1, 2)
-                ,
-                new TokenBehavior()
-                    .OnTapped(
-                        new MoveInFacingDirectionAction(),
-                        new MoveInFacingDirectionAction(),
-                        new RotateAction(Rotation.Clockwise)
-                    )
-                ,
-                new DebugRenderer()
-            ),
+            EntityDataLibrary.Glider,
             new Point(2, 2),
             Direction.Right
         );
 
         _e1 = Space.AddEntityFromData(
             new EntityData(
+                new EntityName("E1"),
                 new Grid()
                     .AddCell(0, 0)
                     .AddCell(1, 0)
@@ -109,6 +95,7 @@ public class SqGameCartridge : BasicGameCartridge
                         new MoveInFacingDirectionAction(),
                         new RotateAction(Rotation.CounterClockwise)
                     )
+                    .OnNudged(new LogConsoleAction("nudged"))
                 ,
                 new DebugRenderer()),
             new Point(5, 2),
@@ -198,14 +185,16 @@ public class SqGameCartridge : BasicGameCartridge
                 }
             }
         }
-        
+
         encounter.EnemyMove.CurrentAttack?.DrawPreview(painter, _spaceRenderer.Settings, previewDepth);
 
         if (encounter.EnemyMove.CurrentAttack != null)
         {
-            painter.DrawStringAtPosition(Client.Assets.GetFont("GameFont", 80), encounter.EnemyMove.CurrentAttack.Description(), new Point(50, 50), new DrawSettings{Color = Color.White, Depth = overlayDepth});
+            painter.DrawStringAtPosition(Client.Assets.GetFont("GameFont", 80),
+                encounter.EnemyMove.CurrentAttack.Description(), new Point(50, 50),
+                new DrawSettings {Color = Color.White, Depth = overlayDepth});
         }
-        
+
         painter.EndSpriteBatch();
     }
 

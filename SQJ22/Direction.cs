@@ -128,4 +128,29 @@ public record Direction
             yield return Direction.None;
         }
     }
+
+    public Direction Opposite()
+    {
+        if (this == Direction.Up)
+        {
+            return Direction.Down;
+        }
+
+        if (this == Direction.Right)
+        {
+            return Direction.Left;
+        }
+
+        if (this == Direction.Down)
+        {
+            return Direction.Up;
+        }
+
+        if (this == Direction.Left)
+        {
+            return Direction.Right;
+        }
+
+        return Direction.None;
+    }
 }

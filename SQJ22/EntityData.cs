@@ -2,8 +2,9 @@
 
 public class EntityData
 {
-    public EntityData(Grid body, TokenBehavior behavior, IRenderer renderer)
+    public EntityData(EntityName name, Grid body, TokenBehavior behavior, IRenderer renderer)
     {
+        Name = name;
         Body = body;
         Behavior = behavior;
         Renderer = renderer;
@@ -11,6 +12,7 @@ public class EntityData
     }
 
     public TokenBehavior Behavior { get; }
+    public EntityName Name { get; }
     public Grid Body { get; }
     public IRenderer Renderer { get; }
     public RenderHandle RenderHandle { get; }

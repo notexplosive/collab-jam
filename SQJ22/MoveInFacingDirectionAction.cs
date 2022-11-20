@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using ExplogineMonoGame;
 using ExTween;
 
 namespace SQJ22;
@@ -10,7 +12,7 @@ public class MoveInFacingDirectionAction : ITokenAction
         return new DynamicTween(() =>
         {
             var original = space.GetEntityFromData(data);
-            var newEntity = original with {Position = original.Position + original.Direction.AsPoint};
+            var moved = original with {Position = original.Position + original.Direction.AsPoint};
             space.RemoveEntityMatchingData(original.Data);
 
             var canMove = true;
@@ -18,7 +20,9 @@ public class MoveInFacingDirectionAction : ITokenAction
             var moveSequence = new SequenceTween();
             var blockSequence = new SequenceTween();
 
-            foreach (var newCellPosition in newEntity.CellPositions())
+            HashSet<EntityData> entitiesAlreadyNudged = new();
+
+            foreach (var newCellPosition in moved.CellPositions())
             {
                 if (space.HasEntityAt(newCellPosition.Global))
                 {
@@ -31,9 +35,17 @@ public class MoveInFacingDirectionAction : ITokenAction
 
                     var nudgedEntity = nudgedMaybeEntity.Value;
                     var nudgedEntityData = nudgedEntity.Data;
-                    nudgeSequence.Add(nudgedEntityData.Behavior.Nudged.Execute(space, nudgedEntityData));
-                    nudgeSequence.Add(GameplayEvents.AnimateNudged(nudgedEntityData.RenderHandle,
-                        original.Direction.AsPoint));
+
+
+                    if (!entitiesAlreadyNudged.Contains(nudgedEntityData))
+                    {
+                        nudgeSequence.Add(GameplayEvents.AnimateNudged(nudgedEntityData.RenderHandle,
+                            original.Direction.AsPoint));
+                        nudgeSequence.Add(nudgedEntityData.Behavior.Nudged.Execute(space, nudgedEntityData));
+                    }
+
+                    entitiesAlreadyNudged.Add(nudgedEntityData);
+
                 }
 
                 if (!space.ContainsCell(newCellPosition.Global))
@@ -44,15 +56,15 @@ public class MoveInFacingDirectionAction : ITokenAction
 
             if (canMove)
             {
-                space.AddEntity(newEntity);
+                space.AddEntity(moved);
+                moveSequence.Add(GameplayEvents.AnimateMove(moved.Data.RenderHandle, original.Direction.AsPoint));
                 moveSequence.Add(original.Data.Behavior.Moved.Execute(space, original.Data));
-                moveSequence.Add(GameplayEvents.AnimateMove(newEntity.Data.RenderHandle, original.Direction.AsPoint));
             }
             else
             {
                 space.AddEntity(original);
-                blockSequence.Add(original.Data.Behavior.Blocked.Execute(space, original.Data));
                 blockSequence.Add(GameplayEvents.AnimateBlock(original.Data.RenderHandle, original.Direction.AsPoint));
+                blockSequence.Add(original.Data.Behavior.Blocked.Execute(space, original.Data));
             }
 
             return new SequenceTween()

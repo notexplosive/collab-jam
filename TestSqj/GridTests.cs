@@ -13,6 +13,7 @@ public class GridTests
     {
         var grid = new GridSpace(10, 10);
         var entity = new EntityData(
+            EntityName.Empty,
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 1),
@@ -31,6 +32,7 @@ public class GridTests
     {
         var grid = new GridSpace(10, 10);
         var firstEntity = new EntityData(
+            EntityName.Empty,
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 0)
@@ -41,6 +43,7 @@ public class GridTests
         );
 
         var secondEntity = new EntityData(
+            EntityName.Empty,
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 0)
@@ -59,6 +62,7 @@ public class GridTests
     {
         var grid = new GridSpace(10, 10);
         var firstEntity = new EntityData(
+            EntityName.Empty,
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 0)
@@ -69,6 +73,7 @@ public class GridTests
         );
 
         var secondEntity = new EntityData(
+            EntityName.Empty,
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 0)
@@ -93,6 +98,7 @@ public class GridTests
     {
         var grid = new GridSpace(10, 10);
         var entity = new EntityData(
+            EntityName.Empty,
             new Grid()
                 .AddCell(0, 0)
                 .AddCell(1, 0)
