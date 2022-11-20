@@ -36,7 +36,6 @@ public class MoveInFacingDirectionAction : ITokenAction
                     var nudgedEntity = nudgedMaybeEntity.Value;
                     var nudgedEntityData = nudgedEntity.Data;
 
-
                     if (!entitiesAlreadyNudged.Contains(nudgedEntityData))
                     {
                         nudgeSequence.Add(GameplayEvents.AnimateNudged(nudgedEntityData.RenderHandle,

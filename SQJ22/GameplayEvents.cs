@@ -31,16 +31,21 @@ public static class GameplayEvents
     public static ITween TriggerTap(Entity entity)
     {
         return new SequenceTween()
+                .Add(GameplayEvents.AnimateTap(entity.Data.RenderHandle))
                 .Add(GameplayEvents.TriggerTapAdjacent(entity))
                 .Add(entity.Data.Behavior.Tapped.Execute(entity.Space, entity.Data))
-                .Add(GameplayEvents.AnimateTap(entity.Data.RenderHandle))
             ;
     }
 
     private static ITween AnimateTap(RenderHandle tappedEntityRenderHandle)
     {
-        // todo
-        return new SequenceTween();
+        var randomVec = ()=> new Vector2(Client.Random.Dirty.NextFloat() - 0.5f, Client.Random.Dirty.NextFloat() - 0.5f) * 0.25f;
+        return new SequenceTween()
+                .Add(new Tween<Vector2>(tappedEntityRenderHandle.Offset, randomVec(), 0.02f, Ease.QuadFastSlow))
+                .Add(new Tween<Vector2>(tappedEntityRenderHandle.Offset, randomVec(), 0.02f, Ease.QuadFastSlow))
+                .Add(new Tween<Vector2>(tappedEntityRenderHandle.Offset, randomVec(), 0.02f, Ease.QuadFastSlow))
+                .Add(new Tween<Vector2>(tappedEntityRenderHandle.Offset, Vector2.Zero, 0.02f, Ease.QuadFastSlow))
+            ;
     }
 
     public static ITween AnimateNudged(RenderHandle nudgedEntityHandle, Point offset)
@@ -71,7 +76,8 @@ public static class GameplayEvents
     private static ITween AnimateTapAdjacent()
     {
         // todo
-        return new SequenceTween();
+        return new SequenceTween()
+            ;
     }
 
     public static ITween AnimateEnemyTurn()
@@ -87,7 +93,7 @@ public static class GameplayEvents
                     {
                         result.Add(new CallbackTween(encounter.ClearMove));
                     }
-                    
+
                     result.Add(new WaitSecondsTween(0.5f));
                     if (shouldGetNewMove)
                     {

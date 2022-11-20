@@ -95,7 +95,6 @@ public class SqGameCartridge : BasicGameCartridge
                         new MoveInFacingDirectionAction(),
                         new RotateAction(Rotation.CounterClockwise)
                     )
-                    .OnNudged(new LogConsoleAction("nudged"))
                 ,
                 new DebugRenderer()),
             new Point(5, 2),
