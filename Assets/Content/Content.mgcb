@@ -37,6 +37,16 @@
 /processorParam:TextureFormat=Color
 /build:exclamation.png
 
+#begin GameFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:GameFont.spritefont
+
+#begin Kanit-Regular.ttf
+/copy:Kanit-Regular.ttf
+
 #begin lockout.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -198,8 +198,14 @@ public class SqGameCartridge : BasicGameCartridge
                 }
             }
         }
-
+        
         encounter.EnemyMove.CurrentAttack?.DrawPreview(painter, _spaceRenderer.Settings, previewDepth);
+
+        if (encounter.EnemyMove.CurrentAttack != null)
+        {
+            painter.DrawStringAtPosition(Client.Assets.GetFont("GameFont", 80), encounter.EnemyMove.CurrentAttack.Description(), new Point(50, 50), new DrawSettings{Color = Color.White, Depth = overlayDepth});
+        }
+        
         painter.EndSpriteBatch();
     }
 

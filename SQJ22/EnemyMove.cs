@@ -138,7 +138,7 @@ public class EnemyMove
 
         public string Description()
         {
-            return $"In {_numberOfTurnsLeft} turns: " + _chargedAttack.Description();
+            return (_numberOfTurnsLeft > 0 ? $"In {_numberOfTurnsLeft} turns: " : "") + _chargedAttack.Description();
         }
 
         public void DrawPreview(Painter painter, RenderSettings settings, Depth depth)
