@@ -56,20 +56,7 @@ public class SqGameCartridge : BasicGameCartridge
         _hoverer = new GridHoverer();
 
         Space.AddEntityFromData(
-            new EntityData(
-                new EntityName("Melee Attack"),
-                new Grid()
-                    .AddCell(0, 0)
-                    .AddCell(1, 0)
-                    .AddCell(-1, 0)
-                ,
-                new TokenBehavior()
-                    .OnTapped(
-                        new DealDamageAction(5)
-                    )
-                ,
-                new DebugRenderer()
-            ),
+            EntityDataLibrary.Rune,
             new Point(1, 1),
             Direction.None
         );
@@ -79,24 +66,15 @@ public class SqGameCartridge : BasicGameCartridge
             new Point(2, 2),
             Direction.Right
         );
+        
+        Space.AddEntityFromData(
+            EntityDataLibrary.Crystal,
+            new Point(3, 5),
+            Direction.None
+        );
 
         _e1 = Space.AddEntityFromData(
-            new EntityData(
-                new EntityName("E1"),
-                new Grid()
-                    .AddCell(0, 0)
-                    .AddCell(1, 0)
-                    .AddCell(-1, 0)
-                    .AddCell(0, 1)
-                    .AddCell(0, -1)
-                ,
-                new TokenBehavior()
-                    .OnTapped(
-                        new MoveInFacingDirectionAction(),
-                        new RotateAction(Rotation.CounterClockwise)
-                    )
-                ,
-                new DebugRenderer()),
+            EntityDataLibrary.E1,
             new Point(5, 2),
             Direction.Down
         );
