@@ -115,14 +115,14 @@ public class SqGameCartridge : BasicGameCartridge
             Direction.Down
         );
 
-        var battle = ServiceLocator.Locate<Battle>();
+        var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
 
         var statusEffectZone = new Grid().AddCell(0, 0).AddCell(1, 1).AddCell(1, 0).AddCell(0, 1);
 
-        battle.StatusEffects.AddStatusEffect(
+        encounter.StatusEffects.AddStatusEffect(
             StatusEffects.CreateLockoutZone(statusEffectZone));
 
-        battle.StatusEffects.AddStatusEffect(
+        encounter.StatusEffects.AddStatusEffect(
             StatusEffects.CreateLockoutEntity(Space, _e1));
     }
 
@@ -149,17 +149,17 @@ public class SqGameCartridge : BasicGameCartridge
         {
             if (_hoverer.PollForTap())
             {
-                var battle = ServiceLocator.Locate<Battle>();
-                battle.PlayerMove.LoseOneEnergy();
+                var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
+                encounter.PlayerMove.LoseOneEnergy();
 
-                if (battle.PlayerMove.IsOutOfEnergy())
+                if (encounter.PlayerMove.IsOutOfEnergy())
                 {
-                    battle.ExecutePlayerAndEnemyTurn();
+                    encounter.ExecutePlayerAndEnemyTurn();
                     Client.Debug.Log("Player turn is over");
                 }
                 else
                 {
-                    Client.Debug.Log($"{battle.PlayerMove.Energy} energy remaining");
+                    Client.Debug.Log($"{encounter.PlayerMove.Energy} energy remaining");
                 }
             }
         }
@@ -175,11 +175,11 @@ public class SqGameCartridge : BasicGameCartridge
         var statusEffectDepth = overlayDepth + 10;
         var previewDepth = overlayDepth + 20;
 
-        var battle = ServiceLocator.Locate<Battle>();
+        var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
 
         _spaceRenderer.DrawEntities(painter, Space, entityDepth);
         _spaceRenderer.DrawSpace(painter, Space, spaceDepth);
-        _spaceRenderer.DrawStatusEffects(painter, battle.StatusEffects, _spaceRenderer.Settings, statusEffectDepth);
+        _spaceRenderer.DrawStatusEffects(painter, encounter.StatusEffects, _spaceRenderer.Settings, statusEffectDepth);
 
         var mousePosCell = _spaceRenderer.Settings.GetGridPositionFromWorldPosition(
             Client.Input.Mouse.Position(Client.RenderCanvas.ScreenToCanvas));
@@ -209,7 +209,7 @@ public class SqGameCartridge : BasicGameCartridge
             }
         }
 
-        battle.EnemyMove.CurrentAttack?.DrawPreview(painter, _spaceRenderer.Settings, previewDepth);
+        encounter.EnemyMove.CurrentAttack?.DrawPreview(painter, _spaceRenderer.Settings, previewDepth);
         painter.EndSpriteBatch();
     }
 

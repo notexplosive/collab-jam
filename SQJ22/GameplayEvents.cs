@@ -76,11 +76,11 @@ public static class GameplayEvents
 
     public static ITween AnimateEnemyTurn()
     {
-        var battle = ServiceLocator.Locate<Battle>();
+        var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
         return new SequenceTween()
-                .Add(new CallbackTween(battle.EnemyMove.CurrentAttack.Execute))
+                .Add(new CallbackTween(encounter.EnemyMove.CurrentAttack.Execute))
                 .Add(new WaitSecondsTween(0.5f))
-                .Add(new CallbackTween(battle.PlanNewEnemyMove))
+                .Add(new CallbackTween(encounter.PlanNewEnemyMove))
                 .Add(GameplayEvents.LogMessage("Enemy finished attacking."))
             ;
     }
@@ -97,7 +97,7 @@ public static class GameplayEvents
         return new SequenceTween()
             .Add(new CallbackTween(() =>
             {
-                ServiceLocator.Locate<Battle>().StatusEffects.IncrementTurn();
+                ServiceLocator.Locate<Battle>().CurrentEncounter.StatusEffects.IncrementTurn();
             }));
     }
 }

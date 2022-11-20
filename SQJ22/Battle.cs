@@ -2,11 +2,11 @@
 
 namespace SQJ22;
 
-public class Battle
+public class Encounter
 {
     private readonly BattleAgent _enemy;
 
-    public Battle()
+    public Encounter()
     {
         _enemy = new BattleAgent(100);
         PlayerAgent = new BattleAgent(50);
@@ -18,7 +18,7 @@ public class Battle
     public StatusEffects StatusEffects { get; } = new();
     public PlayerMove PlayerMove { get; }
     public EnemyMove EnemyMove { get; }
-
+    
     public void ExecutePlayerAndEnemyTurn()
     {
         var animation = ServiceLocator.Locate<Animation>();
@@ -36,4 +36,14 @@ public class Battle
             new Grid().AddCell(0, 0).AddCell(1, 1).AddCell(2, 2),
             (space, zone) => { });
     }
+}
+
+public class Battle
+{
+    public Battle()
+    {
+        CurrentEncounter = new Encounter();
+    }
+
+    public Encounter CurrentEncounter { get; }
 }
