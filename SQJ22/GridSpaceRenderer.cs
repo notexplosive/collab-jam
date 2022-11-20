@@ -1,5 +1,4 @@
-﻿using System;
-using ExplogineCore.Data;
+﻿using ExplogineCore.Data;
 using ExplogineMonoGame;
 using ExplogineMonoGame.Data;
 using Microsoft.Xna.Framework;
@@ -21,19 +20,11 @@ public class GridSpaceRenderer
 
     public void DrawSpace(Painter painter, GridSpace space, Depth depth)
     {
-        for (var x = 0; x < space.Size.X; x++)
-        {
-            for (var y = 0; y < space.Size.Y; y++)
-            {
-                // debug, just draw rectangles
-                var color = (x % 2 == 1 && y % 2 == 0) || (x % 2 == 0 && y % 2 == 1)
-                    ? Color.Teal.WithMultipliedOpacity(0.25f)
-                    : Color.Teal.WithMultipliedOpacity(0.10f);
-                painter.DrawRectangle(
-                    new Rectangle(Settings.CellPositionToRenderedPosition(new Point(x, y)).ToPoint(),
-                        Settings.CellSizeAsPoint), new DrawSettings {Depth = depth, Color = color});
-            }
-        }
+        var rectSize = space.Size.ToVector2() * Settings.CellSize;
+        var asset = Client.Assets.GetTexture("grid");
+        painter.DrawAsRectangle(asset,
+            new Rectangle(Settings.CellPositionToRenderedPosition(Point.Zero).ToPoint(), rectSize.ToPoint()),
+            new DrawSettings {Color = Color.White, Depth = depth, SourceRectangle = new Rectangle(Point.Zero, rectSize.ToPoint())});
     }
 
     public void HighlightCell(Painter painter, GridSpace space, Point cellPosition, Depth depth)
@@ -53,7 +44,8 @@ public class GridSpaceRenderer
         {
             foreach (var cell in statusEffect.Target.CellPositions())
             {
-                DrawMacros.DrawOverlayTextureOnCell(painter, cell, settings, statusEffect.Template.Texture, Vector2.Zero, depth);
+                DrawMacros.DrawOverlayTextureOnCell(painter, cell, settings, statusEffect.Template.Texture,
+                    Vector2.Zero, depth);
             }
         }
     }
