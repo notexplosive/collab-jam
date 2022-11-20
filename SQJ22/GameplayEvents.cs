@@ -23,11 +23,6 @@ public static class GameplayEvents
             ;
     }
 
-    private static CallbackTween LogMessage(string message)
-    {
-        return new CallbackTween(() => { Client.Debug.Log(message); });
-    }
-
     public static ITween TriggerTap(Entity entity)
     {
         return new SequenceTween()
@@ -102,15 +97,14 @@ public static class GameplayEvents
 
                     return result;
                 }))
-                .Add(GameplayEvents.LogMessage("Enemy finished attacking."))
             ;
     }
 
     public static ITween AnimatePlayerAttack(BattleAgent enemy, int damage)
     {
         return new SequenceTween()
-            .Add(new CallbackTween(() => enemy.TakeDamage(damage)))
-            .Add(GameplayEvents.LogMessage($"Dealt {damage} damage"));
+                .Add(new CallbackTween(() => enemy.TakeDamage(damage)))
+            ;
     }
 
     public static ITween IncrementStatusEffectTurn()

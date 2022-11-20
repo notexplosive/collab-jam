@@ -66,7 +66,7 @@ public class SqGameCartridge : BasicGameCartridge
             new Point(2, 2),
             Direction.Right
         );
-        
+
         Space.AddEntityFromData(
             EntityDataLibrary.Crystal,
             new Point(3, 5),
@@ -109,11 +109,6 @@ public class SqGameCartridge : BasicGameCartridge
                 if (encounter.PlayerMove.IsOutOfEnergy())
                 {
                     encounter.ExecutePlayerAndEnemyTurn();
-                    Client.Debug.Log("Player turn is over");
-                }
-                else
-                {
-                    Client.Debug.Log($"{encounter.PlayerMove.Energy} energy remaining");
                 }
             }
         }
@@ -167,8 +162,13 @@ public class SqGameCartridge : BasicGameCartridge
 
         if (encounter.EnemyMove.CurrentAttack != null)
         {
-            painter.DrawStringAtPosition(Client.Assets.GetFont("GameFont", 80),
-                encounter.EnemyMove.CurrentAttack.Description(), new Point(50, 50),
+            painter.DrawStringAtPosition(Client.Assets.GetFont("GameFont", 70),
+                $"Enemy is going to: {encounter.EnemyMove.CurrentAttack.Description()}\n" +
+                $"Player is going to deal {encounter.PlayerMove.PendingDamage} damage\n" +
+                $"Player has {encounter.PlayerMove.Energy} energy\n" +
+                $"Player has {encounter.PlayerAgent.Health} HP\n" +
+                $"Enemy has {encounter.EnemyAgent.Health} HP",
+                new Point(10, 10),
                 new DrawSettings {Color = Color.White, Depth = overlayDepth});
         }
 

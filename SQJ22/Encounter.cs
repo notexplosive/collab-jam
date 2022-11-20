@@ -4,11 +4,11 @@ namespace SQJ22;
 
 public class Encounter
 {
-    private readonly BattleAgent _enemy;
+    public BattleAgent EnemyAgent { get; }
 
     public Encounter()
     {
-        _enemy = new BattleAgent(100);
+        EnemyAgent = new BattleAgent(100);
         PlayerAgent = new BattleAgent(50);
         PlayerMove = new PlayerMove(5);
         EnemyMove = new EnemyMove();
@@ -25,7 +25,7 @@ public class Encounter
 
         animation.Enqueue(new DynamicTween(() => new SequenceTween()
             .Add(GameplayEvents.IncrementStatusEffectTurn())
-            .Add(GameplayEvents.AnimatePlayerAttack(_enemy, PlayerMove.PendingDamage))
+            .Add(GameplayEvents.AnimatePlayerAttack(EnemyAgent, PlayerMove.PendingDamage))
             .Add(GameplayEvents.AnimateEnemyTurn())
             .Add(new CallbackTween(PlayerMove.StartTurn))));
     }
