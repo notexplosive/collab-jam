@@ -4,15 +4,19 @@ using Microsoft.Xna.Framework;
 
 namespace SQJ22;
 
-public readonly record struct ZoneAttack(Grid Zone, Action<Grid, GridSpace, Battle> OnExecute)
+public readonly record struct ZoneAttack(Grid Zone, Point Offset, Action<Grid, GridSpace, Battle, Point> OnExecute)
 {
     public void Execute()
     {
-        OnExecute(Zone, ServiceLocator.Locate<GridSpace>(), ServiceLocator.Locate<Battle>());
+        var space = ServiceLocator.Locate<GridSpace>();
+        OnExecute(Zone, space, ServiceLocator.Locate<Battle>(), Offset);
     }
 
     public IEnumerable<Point> Cells()
     {
-        return Zone.Cells();
+        foreach (var cell in Zone.Cells())
+        {
+            yield return cell + Offset;
+        }
     }
 }

@@ -32,8 +32,6 @@ public class Encounter
 
     public void PlanNewEnemyMove()
     {
-        
-
         EnemyMove.CurrentAttack = AttackPool.Next();
     }
 }

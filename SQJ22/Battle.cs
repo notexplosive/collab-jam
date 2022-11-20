@@ -23,11 +23,13 @@ public static class AttackPool
                 .AddCell(1, 2)
                 .AddCell(2, 2)
             ,
-            (zone, space, battle) =>
+            ServiceLocator.Locate<GridSpace>().GetRandomCell(),
+            (zone, space, battle, offset) =>
             {
-                foreach (var data in space.GetEntityDatasInZone(zone))
+                foreach (var data in space.GetEntityDatasInZone(zone, offset))
                 {
-                    battle.CurrentEncounter.StatusEffects.AddStatusEffect(StatusEffects.Templates.Lockout.CreateInstance(data));
+                    battle.CurrentEncounter.StatusEffects.AddStatusEffect(
+                        StatusEffects.Templates.Lockout.CreateInstance(data));
                 }
             });
 

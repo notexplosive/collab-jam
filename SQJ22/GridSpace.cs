@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ExplogineMonoGame;
 using Microsoft.Xna.Framework;
 
 namespace SQJ22;
@@ -70,7 +71,7 @@ public class GridSpace
                 throw new Exception("Duplicate entity");
             }
         }
-        
+
         _entities.Add(newEntity);
     }
 
@@ -162,12 +163,12 @@ public class GridSpace
         return cellPosition.X >= 0 && cellPosition.Y >= 0 && cellPosition.X < Size.X && cellPosition.Y < Size.Y;
     }
 
-    public IEnumerable<EntityData> GetEntityDatasInZone(Grid zone)
+    public IEnumerable<EntityData> GetEntityDatasInZone(Grid zone, Point offset)
     {
         var set = new HashSet<EntityData>();
         foreach (var cell in zone.Cells())
         {
-            var item = GetEntityDataAt(cell);
+            var item = GetEntityDataAt(cell + offset);
             if (item != null)
             {
                 set.Add(item);
@@ -175,5 +176,10 @@ public class GridSpace
         }
 
         return set;
+    }
+
+    public Point GetRandomCell()
+    {
+        return new Point(Client.Random.Clean.NextInt(0, Size.X), Client.Random.Clean.NextInt(0, Size.Y));
     }
 }

@@ -11,7 +11,7 @@ public class EnemyMove
 
     public EnemyMove()
     {
-        CurrentAttack = AttackPool.Next();
+        CurrentAttack = new DealDamage(5);
     }
     
     public interface IAttack
