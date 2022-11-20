@@ -114,16 +114,6 @@ public class SqGameCartridge : BasicGameCartridge
             new Point(5, 2),
             Direction.Down
         );
-
-        var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
-
-        var statusEffectZone = new Grid().AddCell(0, 0).AddCell(1, 1).AddCell(1, 0).AddCell(0, 1);
-
-        encounter.StatusEffects.AddStatusEffect(
-            StatusEffects.CreateLockoutZone(statusEffectZone));
-
-        encounter.StatusEffects.AddStatusEffect(
-            StatusEffects.CreateLockoutEntity(Space, _e1));
     }
 
     public override void Update(float dt)

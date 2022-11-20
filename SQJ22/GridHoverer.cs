@@ -88,6 +88,18 @@ public class GridHoverer
         {
             if (Client.Input.Mouse.GetButton(MouseButton.Left).WasPressed)
             {
+                var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
+        
+                var statusEffects = encounter.StatusEffects.GetStatusEffects(_hoverState.Entity);
+
+                foreach (var statusEffect in statusEffects)
+                {
+                    if (statusEffect.Template == StatusEffects.Templates.Lockout)
+                    {
+                        return false;
+                    }
+                }
+                
                 _hoverState.Entity.Tap();
                 return true;
             }

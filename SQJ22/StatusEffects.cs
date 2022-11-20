@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using ExplogineMonoGame;
 using Microsoft.Xna.Framework;
@@ -75,15 +76,15 @@ public class StatusEffects
     public class EntityTarget : ITarget
     {
         private readonly GridSpace _space;
-        private readonly EntityData _targetData;
+        public EntityData TargetEntityData { get; }
 
-        public EntityTarget(EntityData targetData)
+        public EntityTarget(EntityData targetEntityData)
         {
             _space = ServiceLocator.Locate<GridSpace>();
-            _targetData = targetData;
+            TargetEntityData = targetEntityData;
         }
 
-        private Entity Entity => _space.GetEntityFromData(_targetData);
+        private Entity Entity => _space.GetEntityFromData(TargetEntityData);
 
         public IEnumerable<Point> CellPositions()
         {
@@ -135,5 +136,19 @@ public class StatusEffects
     {
         public static readonly Template Exclamation = new("exclamation");
         public static readonly Template Lockout = new("lockout");
+    }
+
+    public IEnumerable<Instance> GetStatusEffects(Entity entity)
+    {
+        foreach (var instance in _instances)
+        {
+            if (instance.Target is EntityTarget target)
+            {
+                if (target.TargetEntityData == entity.Data)
+                {
+                    yield return instance;
+                }
+            }
+        }
     }
 }

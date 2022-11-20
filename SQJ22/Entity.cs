@@ -16,6 +16,7 @@ public readonly record struct Entity(GridSpace Space, EntityData Data, Point Pos
     public void Tap()
     {
         var animation = ServiceLocator.Locate<Animation>();
+
         animation.Enqueue(GameplayEvents.TriggerTap(this));
     }
 
