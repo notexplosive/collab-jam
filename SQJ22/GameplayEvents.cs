@@ -78,9 +78,24 @@ public static class GameplayEvents
     {
         var encounter = ServiceLocator.Locate<Battle>().CurrentEncounter;
         return new SequenceTween()
-                .Add(new CallbackTween(encounter.EnemyMove.CurrentAttack.Execute))
-                .Add(new WaitSecondsTween(0.5f))
-                .Add(new CallbackTween(encounter.PlanNewEnemyMove))
+                .Add(new DynamicTween(() =>
+                {
+                    var result = new SequenceTween();
+                    var shouldGetNewMove = encounter.EnemyMove.CurrentAttack.Execute();
+
+                    if (shouldGetNewMove)
+                    {
+                        result.Add(new CallbackTween(encounter.ClearMove));
+                    }
+                    
+                    result.Add(new WaitSecondsTween(0.5f));
+                    if (shouldGetNewMove)
+                    {
+                        result.Add(new CallbackTween(encounter.PlanNewEnemyMove));
+                    }
+
+                    return result;
+                }))
                 .Add(GameplayEvents.LogMessage("Enemy finished attacking."))
             ;
     }

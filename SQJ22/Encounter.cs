@@ -34,4 +34,9 @@ public class Encounter
     {
         EnemyMove.CurrentAttack = AttackPool.Next();
     }
+
+    public void ClearMove()
+    {
+        EnemyMove.CurrentAttack = AttackPool.EmptyAttack();
+    }
 }

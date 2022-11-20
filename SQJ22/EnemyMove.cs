@@ -16,7 +16,7 @@ public class EnemyMove
     
     public interface IAttack
     {
-        public void Execute();
+        public bool Execute();
         public string Description();
 
         public void DrawPreview(Painter painter, RenderSettings settings, Depth depth);
@@ -31,9 +31,10 @@ public class EnemyMove
             _zoneAttack = zoneAttack;
         }
 
-        public void Execute()
+        public bool Execute()
         {
             _zoneAttack.Execute();
+            return true;
         }
 
         public string Description()
@@ -67,9 +68,10 @@ public class EnemyMove
 
         public Entity Entity => _space.GetEntityFromData(_data);
 
-        public void Execute()
+        public bool Execute()
         {
             _execute(_space, _data);
+            return true;
         }
 
         public string Description()
@@ -93,9 +95,10 @@ public class EnemyMove
             _damage = damage;
         }
 
-        public void Execute()
+        public bool Execute()
         {
             ServiceLocator.Locate<Battle>().CurrentEncounter.PlayerAgent.TakeDamage(_damage);
+            return true;
         }
 
         public string Description()
@@ -105,6 +108,42 @@ public class EnemyMove
 
         public void DrawPreview(Painter painter, RenderSettings settings, Depth depth)
         {
+        }
+    }
+
+    public class ChargeAttack : IAttack
+    {
+        private readonly IAttack _chargedAttack;
+        private int _numberOfTurnsLeft;
+
+        public ChargeAttack(IAttack chargedAttack, int duration)
+        {
+            _chargedAttack = chargedAttack;
+            _numberOfTurnsLeft = duration;
+        }
+
+        public bool Execute()
+        {
+            if (_numberOfTurnsLeft > 0)
+            {
+                _numberOfTurnsLeft--;
+                return false;
+            }
+            else
+            {
+                _chargedAttack.Execute();
+                return true;
+            }
+        }
+
+        public string Description()
+        {
+            return $"In {_numberOfTurnsLeft} turns: " + _chargedAttack.Description();
+        }
+
+        public void DrawPreview(Painter painter, RenderSettings settings, Depth depth)
+        {
+            _chargedAttack.DrawPreview(painter, settings, depth);
         }
     }
 }
