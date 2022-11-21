@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ExplogineCore;
 using ExplogineCore.Data;
 using ExplogineMonoGame;
@@ -52,7 +53,7 @@ public class SqGameCartridge : BasicGameCartridge
         ServiceLocator.Register(new RuntimeClock());
         ServiceLocator.Register(new GridSpace(10, 10));
 
-        _spaceRenderer = new GridSpaceRenderer();
+        _spaceRenderer = new GridSpaceRenderer(new(new Vector2(300, 400), 64));
         _hoverer = new GridHoverer();
 
         Space.AddEntityFromData(
@@ -70,7 +71,7 @@ public class SqGameCartridge : BasicGameCartridge
         Space.AddEntityFromData(
             EntityDataLibrary.Crystal,
             new Point(3, 5),
-            Direction.None
+            Direction.Down
         );
 
         Space.AddEntityFromData(
@@ -183,6 +184,11 @@ public class SqGameCartridge : BasicGameCartridge
                     new Point(10, 10),
                     new DrawSettings {Color = Color.White, Depth = overlayDepth});
             }
+
+            painter.DrawAtPosition(battleEncounter.MonsterImage,
+                new Vector2(1300, 100 + MathF.Sin(ServiceLocator.Locate<RuntimeClock>().ElapsedTime) * 20), 
+                new Scale2D(0.5f),
+                new DrawSettings{Flip = new XyBool(true, false)});
         }
 
         if (IsInShop)

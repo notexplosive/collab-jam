@@ -1,4 +1,6 @@
-﻿using ExTween;
+﻿using ExplogineMonoGame;
+using ExTween;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SQJ22;
 
@@ -14,8 +16,10 @@ public class BattleEncounter : IEncounter
         PlayerAgent = new BattleAgent(50);
         PlayerMove = new PlayerMove(5);
         EnemyMove = new EnemyMove();
+        MonsterImage = Client.Assets.GetTexture("img_carver");
     }
 
+    public Texture2D MonsterImage { get; }
     public BattleAgent EnemyAgent { get; }
     public BattleAgent PlayerAgent { get; }
     public StatusEffects StatusEffects { get; } = new();

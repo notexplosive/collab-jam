@@ -2,23 +2,6 @@
 
 public static class EntityDataLibrary
 {
-    public static readonly EntityData MeleeAttack =
-        new(
-            new EntityName("Melee Attack"),
-            new Grid()
-                .AddCell(0, 0)
-                .AddCell(0, 1)
-                .AddCell(0, 2)
-                .AddCell(1, 0)
-                .AddCell(1, 1)
-                .AddCell(1, 2)
-            ,
-            new TokenBehavior()
-                .OnTapped(new DealDamageAction(5))
-            ,
-            new DebugRenderer()
-        );
-
     public static readonly EntityData Glider =
         new(
             new EntityName("Glide Attack"),
@@ -28,6 +11,8 @@ public static class EntityDataLibrary
                 .AddCell(0, 2)
                 .AddCell(1, 0)
                 .AddCell(1, 2)
+                .AddCell(2, 2)
+                .AddCell(2, 0)
             ,
             new TokenBehavior()
                 .OnTapped(new MoveInFacingDirectionAction())
@@ -37,7 +22,7 @@ public static class EntityDataLibrary
                 )
                 .OnBlocked(new ReverseDirectionAction())
             ,
-            new DebugRenderer()
+            new SpriteRenderer("img_fingers")
         );
 
     public static readonly EntityData Crystal =
@@ -49,8 +34,10 @@ public static class EntityDataLibrary
                 .AddCell(0, 2)
             ,
             new TokenBehavior()
-                // todo
-                .OnTapped(new DealDamageAction(5))
+                .OnAdjacentTapped(
+                    new GainEnergyAction(),
+                    new MoveInFacingDirectionAction()
+                    )
             ,
             new SpriteRenderer("img_crystal")
         );

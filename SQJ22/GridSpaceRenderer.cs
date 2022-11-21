@@ -8,8 +8,13 @@ namespace SQJ22;
 
 public class GridSpaceRenderer
 {
-    public RenderSettings Settings { get; } = new(new Vector2(800, 100), 64);
+    public RenderSettings Settings { get; }
 
+    public GridSpaceRenderer(RenderSettings settings)
+    {
+        Settings = new(new Vector2(100, 400), 64);
+    }
+    
     public void DrawEntities(Painter painter, GridSpace space, Depth depth)
     {
         foreach (var entity in space.Entities())
