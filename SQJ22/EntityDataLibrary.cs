@@ -38,6 +38,9 @@ public static class EntityDataLibrary
                     new GainEnergyAction(),
                     new MoveInFacingDirectionAction()
                     )
+                .OnTapped(
+                    new ReverseDirectionAction()
+                    )
             ,
             new SpriteRenderer("img_crystal")
         );
@@ -52,8 +55,10 @@ public static class EntityDataLibrary
             ,
             new TokenBehavior()
                 .OnTapped(
-                    // todo
-                    new DealDamageAction(5)
+                    new DealDamageAction(5),
+                    new MoveInFacingDirectionAction(),
+                    new MoveInFacingDirectionAction(),
+                    new ReverseDirectionAction()
                 )
             ,
             new SpriteRenderer("img_rune")

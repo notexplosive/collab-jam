@@ -25,6 +25,12 @@
 /processorParam:TextureFormat=Color
 /build:arrows.png
 
+#begin battle.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:battle.ogg
+
 #begin exclamation.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -154,6 +160,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:selection.png
+
+#begin shop.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:shop.ogg
 
 #begin engine/console-font.spritefont
 /importer:FontDescriptionImporter

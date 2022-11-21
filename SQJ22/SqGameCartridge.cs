@@ -48,18 +48,24 @@ public class SqGameCartridge : BasicGameCartridge
 
     public override void OnCartridgeStarted()
     {
+        var shopTheme = Client.Assets.GetSoundEffectInstance("shop");
+        shopTheme.IsLooped = true;
+        shopTheme.Play();
+        var battleTheme = Client.Assets.GetSoundEffectInstance("battle");
+        battleTheme.IsLooped = true;
+        battleTheme.Play();
         ServiceLocator.Register(new Animation(false));
         ServiceLocator.Register(new Battle());
         ServiceLocator.Register(new RuntimeClock());
         ServiceLocator.Register(new GridSpace(10, 10));
 
-        _spaceRenderer = new GridSpaceRenderer(new(new Vector2(300, 400), 64));
+        _spaceRenderer = new GridSpaceRenderer(new RenderSettings(new Vector2(300, 400), 64));
         _hoverer = new GridHoverer();
 
         Space.AddEntityFromData(
             EntityDataLibrary.Rune,
             new Point(1, 1),
-            Direction.None
+            Direction.Right
         );
 
         Space.AddEntityFromData(
@@ -186,9 +192,9 @@ public class SqGameCartridge : BasicGameCartridge
             }
 
             painter.DrawAtPosition(battleEncounter.MonsterImage,
-                new Vector2(1300, 100 + MathF.Sin(ServiceLocator.Locate<RuntimeClock>().ElapsedTime) * 20), 
+                new Vector2(1300, 100 + MathF.Sin(ServiceLocator.Locate<RuntimeClock>().ElapsedTime) * 20),
                 new Scale2D(0.5f),
-                new DrawSettings{Flip = new XyBool(true, false)});
+                new DrawSettings {Flip = new XyBool(true)});
         }
 
         if (IsInShop)
@@ -202,6 +208,14 @@ public class SqGameCartridge : BasicGameCartridge
             {
                 ServiceLocator.Locate<Battle>().StartNextBattle();
             }
+
+            Client.Assets.GetSoundEffectInstance("shop").Volume = 0.5f;
+            Client.Assets.GetSoundEffectInstance("battle").Volume = 0f;
+        }
+        else
+        {
+            Client.Assets.GetSoundEffectInstance("shop").Volume = 0f;
+            Client.Assets.GetSoundEffectInstance("battle").Volume = 0.5f;
         }
 
         painter.EndSpriteBatch();
